@@ -1,0 +1,39 @@
+:root {
+  --nex4-black: #020302;
+
+  --nex4-bg: #050705;
+
+  --nex4-bg-soft: #080b08;
+
+  --nex4-surface: #0b0f0c;
+
+  --nex4-surface-2: #101512;
+
+  --nex4-green: #32ef45;
+
+  --nex4-green-bright: #43ff54;
+
+  --nex4-green-dark: #00862e;
+
+  --nex4-text: #f5f7f5;
+
+  --nex4-text-secondary: #9ba49d;
+
+  --nex4-text-muted: #626b64;
+
+  --nex4-border:
+    rgba(255, 255, 255, 0.08);
+
+  --nex4-border-green:
+    rgba(50, 239, 69, 0.3);
+
+  --nex4-gradient:
+    linear-gradient(
+      135deg,
+      #4cff56,
+      #24df42 45%,
+      #00852c
+    );
+
+  --container-width: 1280px;
+}

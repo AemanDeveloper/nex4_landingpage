@@ -1,0 +1,17 @@
+{
+  "name": "NEX4 Digital Studio",
+  "short_name": "NEX4",
+  "description": "Digital products, development and marketing by NEX4.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#050705",
+  "theme_color": "#050705",
+  "icons": [
+    {
+      "src": "/images/nex4-icon.png",
+      "sizes": "any",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

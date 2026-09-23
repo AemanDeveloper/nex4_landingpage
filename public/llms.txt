@@ -1,0 +1,27 @@
+# NEX4
+
+NEX4 is an independent digital studio based in Malaysia. We bring development and marketing together to build practical digital experiences for businesses.
+
+## Services
+
+- Web development: landing pages, business websites, web applications and dashboards.
+- Mobile applications: cross-platform applications, API integrations and AI integrations.
+- Digital marketing: social media, content strategy, campaigns and brand presence.
+
+## Live products
+
+- MyNutriTrack AI: https://nutritrack.nex4.my
+- NEX4 Marketing CRM public beta: https://crm.nex4.my
+
+## Team portfolios
+
+- Aeman: https://portfolio-aiman.nex4.my
+- Syed Ali: https://portfolio-ali.nex4.my
+- Kirthy: portfolio coming soon.
+
+## Contact
+
+- Website: https://nex4.my
+- Email: hello@nex4.my
+
+This file is a concise factual guide to the public content on the NEX4 website. The canonical source is https://nex4.my.
