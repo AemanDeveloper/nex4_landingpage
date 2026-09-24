@@ -36,10 +36,16 @@ import NoiseBackgroundButton from "~/components/ui/NoiseBackgroundButton.vue";
       </div>
     </div>
 
-    <div class="hero-services">
-      <div class="container services-row">
-        <span>Web Development</span><i /><span>Mobile Applications</span><i />
-        <span>AI Integration</span><i /><span>Digital Marketing</span><i /><span>Digital Products</span>
+    <div class="hero-services" aria-label="NEX4 services">
+      <div class="services-track">
+        <div class="services-row">
+          <span>Web Development</span><i /><span>Mobile Applications</span><i />
+          <span>AI Integration</span><i /><span>Digital Marketing</span><i /><span>Digital Products</span><i />
+        </div>
+        <div class="services-row" aria-hidden="true">
+          <span>Web Development</span><i /><span>Mobile Applications</span><i />
+          <span>AI Integration</span><i /><span>Digital Marketing</span><i /><span>Digital Products</span><i />
+        </div>
       </div>
     </div>
   </section>
@@ -61,19 +67,25 @@ h1 em { color: transparent; font-style: normal; background: var(--nex4-gradient)
 .hero-content > p { max-width:650px; margin:28px auto 0; color:var(--nex4-text-secondary); font-size:17px; line-height:1.75; }
 .hero-actions { display:flex; justify-content:center; gap:12px; margin-top:34px; }
 .project-signals { width:min(100%,530px); display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:34px auto 0; }
-.project-signals a { min-height:60px; display:grid; grid-template-columns:auto 1fr auto; align-items:center; gap:12px; padding:10px 14px; border:1px solid var(--nex4-border); border-radius:14px; background:rgba(4,6,10,.62); text-align:left; backdrop-filter:blur(16px); transition:var(--motion-fast) var(--motion-ease); }
-.project-signals a:hover,.project-signals a:focus-visible { border-color:var(--nex4-border-green); background:rgba(50,239,69,.04); outline:none; }
+.project-signals a { position:relative; isolation:isolate; min-height:60px; display:grid; grid-template-columns:auto 1fr auto; align-items:center; gap:12px; overflow:hidden; padding:10px 14px; border:1px solid transparent; border-radius:14px; text-align:left; backdrop-filter:blur(16px); transition:transform var(--motion-fast) var(--motion-ease),box-shadow var(--motion-fast) var(--motion-ease); }
+.project-signals a::before { content:""; position:absolute; z-index:-2; inset:-220%; background:conic-gradient(from 0deg,transparent 0 76%,rgba(50,239,69,.12) 82%,#32ef45 90%,#c9ffd0 94%,transparent 100%); animation:moving-border 3.4s linear infinite; }
+.project-signals a::after { content:""; position:absolute; z-index:-1; inset:1px; border-radius:12px; background:rgba(4,6,10,.92); }
+.project-signals a:hover,.project-signals a:focus-visible { transform:translateY(-2px); box-shadow:0 12px 35px rgba(50,239,69,.1); outline:none; }
 .project-signals strong { font-size:14px; }
 .project-signals > a > :deep(svg) { color:var(--nex4-green); font-size:15px; }
 .signal-status { display:flex; align-items:center; gap:6px; color:var(--nex4-text-muted); font-size:10px; font-weight:700; letter-spacing:.8px; }
 .signal-status i { width:6px; height:6px; border-radius:50%; background:var(--nex4-green); box-shadow:0 0 9px rgba(50,239,69,.75); animation:status-pulse 1.8s ease-in-out infinite; }
-.hero-services { position:absolute; z-index:3; bottom:0; width:100%; border-top:1px solid var(--nex4-border); background:rgba(255,255,255,.01); }
-.services-row { min-height:65px; display:flex; align-items:center; justify-content:space-between; gap:20px; color:var(--nex4-text-muted); font-size:12px; font-weight:600; letter-spacing:1px; text-transform:uppercase; }
+.hero-services { position:absolute; z-index:3; bottom:0; width:100%; overflow:hidden; border-top:1px solid var(--nex4-border); background:rgba(255,255,255,.01); }
+.services-track { display:flex; width:max-content; animation:services-marquee 25s linear infinite; }
+.hero-services:hover .services-track { animation-play-state:paused; }
+.services-row { min-height:65px; display:flex; align-items:center; gap:54px; padding-right:54px; color:var(--nex4-text-muted); font-size:12px; font-weight:600; letter-spacing:1px; text-transform:uppercase; white-space:nowrap; }
 .services-row i { width:4px; height:4px; flex-shrink:0; border-radius:50%; background:var(--nex4-green); }
 
 @keyframes hero-enter { from { opacity:0; transform:translateY(28px); } }
 @keyframes aurora-enter { from { opacity:0; transform:rotate(-8deg) scale(.9); } to { opacity:.32; transform:rotate(-8deg) scale(1.12); } }
 @keyframes aurora-shift { from { background-position:50% 50%,50% 50%; } to { background-position:350% 50%,350% 50%; } }
+@keyframes moving-border { to { transform:rotate(1turn); } }
+@keyframes services-marquee { to { transform:translateX(-50%); } }
 
 @media (max-width:700px) {
   .hero { min-height:max(760px,100svh); padding:120px 0 105px; }
@@ -90,6 +102,7 @@ h1 em { color: transparent; font-style: normal; background: var(--nex4-gradient)
   .project-signals a { min-height:56px; padding:9px 10px; gap:8px; }
   .project-signals strong { font-size:13px; }
   .signal-status { font-size:9px; }
-  .services-row { overflow:hidden; justify-content:flex-start; white-space:nowrap; }
+  .services-track { animation-duration:18s; }
+  .services-row { gap:34px; padding-right:34px; }
 }
 </style>

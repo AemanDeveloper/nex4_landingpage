@@ -43,7 +43,7 @@
 
             <a href="#contact"> Start a Project </a>
 
-            <a href="mailto:hello@nex4.my"> Email </a>
+            <a href="mailto:nex4digitalstudio@gmail.com"> nex4digitalstudio@gmail.com </a>
           </div>
         </div>
       </div>

@@ -22,8 +22,8 @@ import ArrowUpRightIcon from "~/components/ui/ArrowUpRightIcon.vue";
       </p>
 
       <div class="contact-actions">
-        <a href="mailto:hello@nex4.my" class="contact-primary">
-          Email NEX4
+        <a href="mailto:nex4digitalstudio@gmail.com" class="contact-primary">
+          nex4digitalstudio@gmail.com
 
           <ArrowUpRightIcon />
         </a>

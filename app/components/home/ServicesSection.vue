@@ -21,7 +21,15 @@ import { services } from "~/data/home";
         </div>
 
         <div class="terminal-body">
-          <div v-for="(service, index) in services" :key="service.title" class="terminal-command" :style="{ '--line-index': index }">
+          <div
+            v-for="(service, index) in services"
+            :key="service.title"
+            class="terminal-command"
+            :style="{
+              '--command-delay': `${index * 1200 + 150}ms`,
+              '--output-delay': `${index * 1200 + 820}ms`,
+            }"
+          >
             <div class="command-line">
               <span class="prompt">nex4@studio:~$</span>
               <span class="command">explore</span>
@@ -61,14 +69,15 @@ import { services } from "~/data/home";
 .terminal-controls i:nth-child(3) { background:#28c840; }
 .terminal-session { justify-self:end; color:#666d67; }
 .terminal-body { min-height:570px; padding:34px 38px 36px; font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace; }
-.terminal-command { padding:0 0 30px; opacity:0; transform:translateY(12px); }
-.service-terminal.is-visible .terminal-command { animation:terminal-line .65s var(--motion-ease) forwards; animation-delay:calc(.18s + var(--line-index) * .25s); }
-.command-line { display:flex; flex-wrap:wrap; gap:8px; color:#e7ece8; font-size:13px; line-height:1.7; }
+.terminal-command { padding:0 0 30px; }
+.command-line { display:flex; flex-wrap:wrap; gap:8px; clip-path:inset(0 100% 0 0); opacity:0; color:#e7ece8; font-size:13px; line-height:1.7; }
+.service-terminal.is-visible .command-line { animation:terminal-type .72s steps(28,end) forwards; animation-delay:var(--command-delay); }
 .prompt { color:#28c840; }
 .command { color:#f4f7f5; }
 .flag { color:#60a5fa; }
 .argument { color:#fbbf24; }
-.command-output { display:grid; grid-template-columns:54px 1fr; gap:18px; margin-top:15px; padding:22px; border:1px solid rgba(255,255,255,.075); border-radius:12px; background:rgba(255,255,255,.018); transition:border-color var(--motion-fast) ease,background var(--motion-fast) ease; }
+.command-output { display:grid; grid-template-columns:54px 1fr; gap:18px; margin-top:15px; padding:22px; border:1px solid rgba(255,255,255,.075); border-radius:12px; opacity:0; transform:translateY(10px); background:rgba(255,255,255,.018); transition:border-color var(--motion-fast) ease,background var(--motion-fast) ease; }
+.service-terminal.is-visible .command-output { animation:terminal-output .5s var(--motion-ease) forwards; animation-delay:var(--output-delay); }
 .command-output:hover { border-color:rgba(50,239,69,.24); background:rgba(50,239,69,.025); }
 .output-number { color:#626b64; font-size:12px; }
 h3 { color:#f5f7f5; font-family:"Manrope",sans-serif; font-size:21px; letter-spacing:-.6px; }
@@ -76,10 +85,13 @@ h3 { color:#f5f7f5; font-family:"Manrope",sans-serif; font-size:21px; letter-spa
 ul { display:flex; flex-wrap:wrap; gap:8px 20px; margin-top:14px; list-style:none; }
 li { color:#aab2ac; font-size:12px; }
 li span { margin-right:7px; color:#28c840; }
-.terminal-ready { display:flex; align-items:center; gap:9px; color:#eef2ef; font-size:13px; }
+.terminal-ready { display:flex; align-items:center; gap:9px; opacity:0; color:#eef2ef; font-size:13px; }
+.service-terminal.is-visible .terminal-ready { animation:terminal-output .35s var(--motion-ease) 3.75s forwards; }
 .cursor { width:8px; height:16px; background:#d7ddd8; animation:cursor-blink 1s steps(1) infinite; }
-@keyframes terminal-line { to { opacity:1; transform:translateY(0); } }
+@keyframes terminal-type { to { clip-path:inset(0 0 0 0); opacity:1; } }
+@keyframes terminal-output { to { opacity:1; transform:translateY(0); } }
 @keyframes cursor-blink { 50% { opacity:0; } }
 @media (max-width:850px) { .services-header { grid-template-columns:1fr; gap:28px; } .terminal-body { min-height:0; padding:25px 20px; } .terminal-command { padding-bottom:24px; } }
 @media (max-width:520px) { .terminal-bar { grid-template-columns:1fr auto; } .terminal-bar > span:first-of-type { justify-self:end; } .terminal-session { display:none; } .command-output { grid-template-columns:1fr; gap:8px; padding:17px; } .command-line { gap:5px 7px; font-size:11px; } ul { display:grid; grid-template-columns:1fr 1fr; gap:7px; } }
+@media (prefers-reduced-motion:reduce) { .command-line,.command-output,.terminal-ready { clip-path:none; opacity:1; transform:none; animation:none !important; } }
 </style>

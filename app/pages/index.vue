@@ -75,7 +75,7 @@ useHead({
         name: "NEX4",
         url: siteUrl,
         logo: `${siteUrl}/images/nex4-icon.png`,
-        email: "hello@nex4.my",
+        email: "nex4digitalstudio@gmail.com",
         description: siteDescription,
         areaServed: "Malaysia",
         hasOfferCatalog: {
