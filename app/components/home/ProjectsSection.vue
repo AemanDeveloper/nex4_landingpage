@@ -62,7 +62,8 @@ onBeforeUnmount(() => {
             <p>{{ project.description }}</p>
             <div class="project-tags"><span v-for="tag in project.tags" :key="tag">{{ tag }}</span></div>
             <a :href="project.link" target="_blank" rel="noopener noreferrer" class="project-link">
-              {{ project.linkText }} <ArrowUpRightIcon />
+              <span class="link-circle" aria-hidden="true"><span class="link-arrow" /></span>
+              <span class="link-text">{{ project.linkText }}</span>
             </a>
           </div>
 
@@ -107,8 +108,15 @@ onBeforeUnmount(() => {
 .project-content > p { position:relative; z-index:2; max-width:440px; margin-top:22px; color:var(--nex4-text-secondary); font-size:16px; line-height:1.75; }
 .project-tags { display:flex; flex-wrap:wrap; gap:8px; margin-top:26px; }
 .project-tags span { padding:7px 12px; border:1px solid var(--nex4-border); border-radius:999px; color:#8e988f; font-size:12px; }
-.project-link { display:inline-flex; align-items:center; gap:10px; margin-top:35px; padding-bottom:5px; border-bottom:1px solid rgba(50,239,69,.4); font-size:14px; font-weight:600; }
-.project-link :deep(svg) { color:var(--nex4-green); }
+.project-link { position:relative; width:13.5rem; height:3rem; display:inline-block; margin-top:35px; border:0; color:inherit; font-size:13px; font-weight:700; outline:none; }
+.link-circle { position:relative; width:3rem; height:3rem; display:block; margin:0; border:1px solid rgba(50,239,69,.35); border-radius:1.625rem; background:#0b2110; transition:all .45s cubic-bezier(.65,0,.076,1); }
+.link-arrow { position:absolute; top:0; bottom:0; left:.625rem; width:1.125rem; height:.125rem; margin:auto; background:transparent; transition:all .45s cubic-bezier(.65,0,.076,1); }
+.link-arrow::before { position:absolute; content:""; top:-.29rem; right:.0625rem; width:.625rem; height:.625rem; border-top:.125rem solid var(--nex4-green); border-right:.125rem solid var(--nex4-green); transform:rotate(45deg); }
+.link-text { position:absolute; inset:0; padding:.75rem 0; margin-left:1.85rem; color:#dce4de; line-height:1.6; text-align:center; text-transform:uppercase; transition:all .45s cubic-bezier(.65,0,.076,1); }
+.project-link:hover .link-circle,.project-link:focus-visible .link-circle { width:100%; border-color:var(--nex4-green); background:#123719; box-shadow:0 12px 34px rgba(50,239,69,.12); }
+.project-link:hover .link-arrow,.project-link:focus-visible .link-arrow { background:var(--nex4-green); transform:translateX(1rem); }
+.project-link:hover .link-text,.project-link:focus-visible .link-text { color:#fff; }
+.project-link:focus-visible { outline:2px solid var(--nex4-green); outline-offset:5px; border-radius:999px; }
 .project-visual { position:relative; padding:14px; overflow:hidden; border-radius:20px; background:radial-gradient(circle at 80% 10%,rgba(50,239,69,.16),transparent 38%),linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px),#061008; background-size:auto,34px 34px,34px 34px,auto; transition:transform .3s ease; }
 .project-visual::after { content:""; position:absolute; inset:-60% -20%; background:linear-gradient(105deg,transparent 42%,rgba(255,255,255,.07) 50%,transparent 58%); transform:translateX(-70%); transition:transform .8s ease; pointer-events:none; }
 .project-visual:hover::after { transform:translateX(70%); }
