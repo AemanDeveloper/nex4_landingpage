@@ -18,7 +18,7 @@ let revealObserver: IntersectionObserver | undefined;
 
 onMounted(() => {
   const items = document.querySelectorAll<HTMLElement>(
-    ".section-label, .section-title, .services-header > p, .service-card, .projects-header > p, .project-card, .about-content, .team-header > p, .team-card, .contact-content",
+    ".section-label, .section-title, .services-header > p, .service-terminal, .projects-header > p, .about-content, .team-header > p, .team-card, .contact-content",
   );
 
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
@@ -37,9 +37,8 @@ onMounted(() => {
     { rootMargin: "0px 0px -8%", threshold: 0.08 },
   );
 
-  items.forEach((item, index) => {
+  items.forEach((item) => {
     item.classList.add("reveal-item");
-    item.style.setProperty("--reveal-delay", `${(index % 3) * 70}ms`);
     revealObserver?.observe(item);
   });
 });

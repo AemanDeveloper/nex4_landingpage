@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import ArrowUpRightIcon from "~/components/ui/ArrowUpRightIcon.vue";
+import NoiseBackgroundButton from "~/components/ui/NoiseBackgroundButton.vue";
 </script>
 
 <template>
@@ -16,7 +17,7 @@ import ArrowUpRightIcon from "~/components/ui/ArrowUpRightIcon.vue";
         <h1>We build digital <em>products</em><br />that move businesses forward.</h1>
         <p>Websites, mobile applications and digital marketing brought together by one creative technology team.</p>
         <div class="hero-actions">
-          <a href="#contact" class="primary-button">Start a Project <ArrowUpRightIcon /></a>
+          <NoiseBackgroundButton href="#contact" label="Start a Project" />
           <a href="#work" class="secondary-button">View Our Work</a>
         </div>
 
@@ -45,14 +46,14 @@ import ArrowUpRightIcon from "~/components/ui/ArrowUpRightIcon.vue";
 </template>
 
 <style scoped>
-.hero { position:relative; min-height:max(720px,100svh); display:flex; align-items:center; overflow:hidden; padding:150px 0 120px; background:radial-gradient(circle at 50% 20%,rgba(4,28,11,.7),transparent 44%),var(--nex4-bg); }
+.hero { position:relative; min-height:max(720px,100svh); display:flex; align-items:center; overflow:hidden; padding:150px 0 120px; background:#000; }
 .background-grid { position:absolute; inset:-64px; opacity:.55; background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px); background-size:64px 64px; mask-image:linear-gradient(to bottom,transparent,black 20%,black 82%,transparent); animation:grid-drift 18s linear infinite; }
 .aurora { position:absolute; z-index:1; inset:0; overflow:hidden; pointer-events:none; mask-image:linear-gradient(to bottom,black 0%,black 72%,transparent 100%); }
-.aurora-layer { position:absolute; inset:-45%; opacity:0; background-image:repeating-linear-gradient(108deg,transparent 0%,transparent 8%,rgba(3,8,4,.92) 10%,transparent 13%,transparent 20%),repeating-linear-gradient(108deg,#32ef45 8%,#0c8e37 14%,#075224 19%,#83ff8e 24%,#32ef45 30%); background-size:300% 220%,200% 180%; background-position:50% 50%,50% 50%; filter:blur(34px) saturate(1.15); transform:rotate(-8deg) scale(1.12); mix-blend-mode:screen; animation:aurora-enter 1.2s .05s ease-out forwards,aurora-shift 32s 1.2s linear infinite; }
-.aurora-layer::after { content:""; position:absolute; inset:0; background:radial-gradient(ellipse at 50% 15%,rgba(50,239,69,.46),rgba(5,7,5,0) 54%); }
-.aurora-glow { position:absolute; top:-18%; left:50%; width:min(1040px,120vw); height:700px; transform:translateX(-50%); border-radius:50%; background:radial-gradient(ellipse,rgba(50,239,69,.17),rgba(0,134,46,.06) 45%,transparent 72%); filter:blur(45px); animation:soft-pulse 8s ease-in-out infinite; }
+.aurora-layer { position:absolute; inset:-45%; opacity:0; background-image:repeating-linear-gradient(100deg,#000 0%,#000 7%,transparent 10%,transparent 12%,#000 16%),repeating-linear-gradient(100deg,#3b82f6 10%,#a5b4fc 15%,#93c5fd 20%,#ddd6fe 25%,#60a5fa 30%); background-size:300% 220%,200% 180%; background-position:50% 50%,50% 50%; filter:blur(36px) saturate(1.25); transform:rotate(-8deg) scale(1.12); mix-blend-mode:screen; animation:aurora-enter 1.2s .05s var(--motion-ease) forwards,aurora-shift 60s 1.2s linear infinite; }
+.aurora-layer::after { content:""; position:absolute; inset:0; background:radial-gradient(ellipse at 50% 15%,rgba(129,140,248,.42),rgba(5,7,12,0) 55%); }
+.aurora-glow { position:absolute; top:-18%; left:50%; width:min(1040px,120vw); height:700px; transform:translateX(-50%); border-radius:50%; background:radial-gradient(ellipse,rgba(96,165,250,.17),rgba(139,92,246,.07) 45%,transparent 72%); filter:blur(45px); animation:soft-pulse 9s ease-in-out infinite; }
 .hero-container { position:relative; z-index:2; display:flex; justify-content:center; }
-.hero-content { width:min(100%,1080px); padding-top:125px; text-align:center; animation:hero-enter .85s .35s both cubic-bezier(.2,.7,.2,1); }
+.hero-content { width:min(100%,1080px); padding-top:125px; text-align:center; animation:hero-enter var(--motion-slow) .3s both var(--motion-ease); }
 .eyebrow { display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:24px; color:var(--nex4-text-secondary); font-size:12px; font-weight:700; letter-spacing:2px; }
 .eyebrow span { width: 7px; height: 7px; border-radius: 50%; background: var(--nex4-green); box-shadow: 0 0 14px rgba(50,239,69,.8); }
 h1 { max-width:1050px; margin:0 auto; font-family:"Manrope",sans-serif; font-size:clamp(58px,6.3vw,92px); font-weight:600; line-height:.98; letter-spacing:-5.5px; text-wrap:balance; }
@@ -60,7 +61,7 @@ h1 em { color: transparent; font-style: normal; background: var(--nex4-gradient)
 .hero-content > p { max-width:650px; margin:28px auto 0; color:var(--nex4-text-secondary); font-size:17px; line-height:1.75; }
 .hero-actions { display:flex; justify-content:center; gap:12px; margin-top:34px; }
 .project-signals { width:min(100%,530px); display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:34px auto 0; }
-.project-signals a { min-height:60px; display:grid; grid-template-columns:auto 1fr auto; align-items:center; gap:12px; padding:10px 14px; border:1px solid var(--nex4-border); border-radius:14px; background:rgba(6,12,7,.62); text-align:left; backdrop-filter:blur(16px); transition:.25s ease; }
+.project-signals a { min-height:60px; display:grid; grid-template-columns:auto 1fr auto; align-items:center; gap:12px; padding:10px 14px; border:1px solid var(--nex4-border); border-radius:14px; background:rgba(4,6,10,.62); text-align:left; backdrop-filter:blur(16px); transition:var(--motion-fast) var(--motion-ease); }
 .project-signals a:hover,.project-signals a:focus-visible { border-color:var(--nex4-border-green); background:rgba(50,239,69,.04); outline:none; }
 .project-signals strong { font-size:14px; }
 .project-signals > a > :deep(svg) { color:var(--nex4-green); font-size:15px; }

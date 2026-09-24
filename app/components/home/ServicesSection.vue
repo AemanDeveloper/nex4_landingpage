@@ -8,219 +8,78 @@ import { services } from "~/data/home";
       <div class="services-header">
         <div>
           <div class="section-label">01 / SERVICES</div>
-
-          <h2 class="section-title">
-            Everything you need
-            <br />
-
-            <span> to go digital. </span>
-          </h2>
+          <h2 class="section-title">Everything you need<br /><span>to go digital.</span></h2>
         </div>
-
-        <p>
-          Development and marketing working together to turn ideas into useful
-          digital experiences.
-        </p>
+        <p>Development and marketing working together to turn ideas into useful digital experiences.</p>
       </div>
 
-      <div class="services-grid">
-        <article
-          v-for="service in services"
-          :key="service.title"
-          class="service-card"
-        >
-          <span class="service-number">
-            {{ service.number }}
-          </span>
+      <div class="service-terminal" aria-label="NEX4 services terminal">
+        <div class="terminal-bar">
+          <div class="terminal-controls" aria-hidden="true"><i /><i /><i /></div>
+          <span>NEX4 Studio — services</span>
+          <span class="terminal-session">bash</span>
+        </div>
 
-          <div class="service-icon">+</div>
+        <div class="terminal-body">
+          <div v-for="(service, index) in services" :key="service.title" class="terminal-command" :style="{ '--line-index': index }">
+            <div class="command-line">
+              <span class="prompt">nex4@studio:~$</span>
+              <span class="command">explore</span>
+              <span class="flag">--service</span>
+              <span class="argument">"{{ service.title }}"</span>
+            </div>
+            <div class="command-output">
+              <span class="output-number">{{ service.number }}</span>
+              <div>
+                <h3>{{ service.title }}</h3>
+                <p>{{ service.description }}</p>
+                <ul>
+                  <li v-for="item in service.items" :key="item"><span>✓</span>{{ item }}</li>
+                </ul>
+              </div>
+            </div>
+          </div>
 
-          <h3>
-            {{ service.title }}
-          </h3>
-
-          <p>
-            {{ service.description }}
-          </p>
-
-          <div class="line" />
-
-          <ul>
-            <li v-for="item in service.items" :key="item">
-              <span>+</span>
-
-              {{ item }}
-            </li>
-          </ul>
-        </article>
+          <div class="terminal-ready">
+            <span class="prompt">nex4@studio:~$</span><span class="cursor" aria-hidden="true" />
+          </div>
+        </div>
       </div>
     </div>
   </section>
 </template>
 
 <style scoped>
-.services {
-  border-top: 1px solid var(--nex4-border);
-
-  background: linear-gradient(180deg, var(--nex4-bg), var(--nex4-bg-soft));
-}
-
-.services-header {
-  display: grid;
-
-  grid-template-columns: 1fr 400px;
-
-  align-items: end;
-
-  gap: 60px;
-
-  margin-bottom: 65px;
-}
-
-.services-header > p {
-  color: var(--nex4-text-secondary);
-
-  line-height: 1.8;
-}
-
-.services-grid {
-  display: grid;
-
-  grid-template-columns: repeat(3, 1fr);
-
-  gap: 15px;
-}
-
-.service-card {
-  position: relative;
-  overflow: hidden;
-  min-height: 450px;
-
-  padding: 30px;
-
-  border: 1px solid var(--nex4-border);
-
-  border-radius: 18px;
-
-  background: linear-gradient(
-    145deg,
-    rgba(255, 255, 255, 0.025),
-    rgba(255, 255, 255, 0.007)
-  );
-
-  transition: 0.3s ease;
-}
-
-.service-card::before {
-  content: "";
-  position: absolute;
-  width: 220px;
-  height: 220px;
-  top: -140px;
-  right: -140px;
-  border-radius: 50%;
-  background: rgba(50, 239, 69, 0.12);
-  filter: blur(55px);
-  opacity: 0;
-  transition: opacity 0.35s ease;
-  pointer-events: none;
-}
-
-.service-card:hover {
-  transform: translateY(-6px);
-
-  border-color: var(--nex4-border-green);
-
-  background: linear-gradient(145deg, rgba(64, 240, 68, 0.06), transparent);
-}
-
-.service-card:hover::before { opacity: 1; }
-
-.service-number {
-  color: var(--nex4-text-muted);
-
-  font-size: 12px;
-}
-
-.service-icon {
-  width: 45px;
-  height: 45px;
-
-  display: grid;
-  place-items: center;
-
-  margin-left: auto;
-
-  border: 1px solid var(--nex4-border);
-
-  border-radius: 50%;
-
-  color: var(--nex4-green);
-
-  font-size: 21px;
-}
-
-h3 {
-  margin-top: 75px;
-
-  font-family: "Manrope", sans-serif;
-
-  font-size: 24px;
-
-  letter-spacing: -1px;
-}
-
-.service-card > p {
-  min-height: 80px;
-
-  margin-top: 13px;
-
-  color: var(--nex4-text-secondary);
-
-  font-size: 14px;
-
-  line-height: 1.75;
-}
-
-.line {
-  height: 1px;
-
-  margin: 25px 0;
-
-  background: var(--nex4-border);
-}
-
-ul {
-  display: grid;
-
-  gap: 9px;
-
-  list-style: none;
-}
-
-li {
-  color: var(--nex4-text-secondary);
-
-  font-size: 14px;
-}
-
-li span {
-  margin-right: 8px;
-
-  color: var(--nex4-green);
-}
-
-@media (max-width: 850px) {
-  .services-header {
-    grid-template-columns: 1fr;
-  }
-
-  .services-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .service-card {
-    min-height: 400px;
-  }
-}
+.services { border-top:1px solid var(--nex4-border); background:linear-gradient(180deg,var(--nex4-bg),var(--nex4-bg-soft)); }
+.services-header { display:grid; grid-template-columns:1fr 400px; align-items:end; gap:60px; margin-bottom:65px; }
+.services-header > p { color:var(--nex4-text-secondary); line-height:1.8; }
+.service-terminal { overflow:hidden; border:1px solid rgba(255,255,255,.11); border-radius:18px; background:#090b0a; box-shadow:0 35px 100px rgba(0,0,0,.35),inset 0 1px rgba(255,255,255,.04); }
+.terminal-bar { min-height:52px; display:grid; grid-template-columns:1fr auto 1fr; align-items:center; padding:0 18px; border-bottom:1px solid rgba(255,255,255,.08); background:linear-gradient(180deg,#171a18,#111311); color:#9ba19c; font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace; font-size:12px; }
+.terminal-controls { display:flex; gap:8px; }
+.terminal-controls i { width:11px; height:11px; border-radius:50%; background:#ff5f57; }
+.terminal-controls i:nth-child(2) { background:#febc2e; }
+.terminal-controls i:nth-child(3) { background:#28c840; }
+.terminal-session { justify-self:end; color:#666d67; }
+.terminal-body { min-height:570px; padding:34px 38px 36px; font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace; }
+.terminal-command { padding:0 0 30px; opacity:0; transform:translateY(12px); }
+.service-terminal.is-visible .terminal-command { animation:terminal-line .65s var(--motion-ease) forwards; animation-delay:calc(.18s + var(--line-index) * .25s); }
+.command-line { display:flex; flex-wrap:wrap; gap:8px; color:#e7ece8; font-size:13px; line-height:1.7; }
+.prompt { color:#28c840; }
+.command { color:#f4f7f5; }
+.flag { color:#60a5fa; }
+.argument { color:#fbbf24; }
+.command-output { display:grid; grid-template-columns:54px 1fr; gap:18px; margin-top:15px; padding:22px; border:1px solid rgba(255,255,255,.075); border-radius:12px; background:rgba(255,255,255,.018); transition:border-color var(--motion-fast) ease,background var(--motion-fast) ease; }
+.command-output:hover { border-color:rgba(50,239,69,.24); background:rgba(50,239,69,.025); }
+.output-number { color:#626b64; font-size:12px; }
+h3 { color:#f5f7f5; font-family:"Manrope",sans-serif; font-size:21px; letter-spacing:-.6px; }
+.command-output p { max-width:720px; margin-top:5px; color:#8f9991; font-family:"DM Sans",sans-serif; font-size:14px; line-height:1.65; }
+ul { display:flex; flex-wrap:wrap; gap:8px 20px; margin-top:14px; list-style:none; }
+li { color:#aab2ac; font-size:12px; }
+li span { margin-right:7px; color:#28c840; }
+.terminal-ready { display:flex; align-items:center; gap:9px; color:#eef2ef; font-size:13px; }
+.cursor { width:8px; height:16px; background:#d7ddd8; animation:cursor-blink 1s steps(1) infinite; }
+@keyframes terminal-line { to { opacity:1; transform:translateY(0); } }
+@keyframes cursor-blink { 50% { opacity:0; } }
+@media (max-width:850px) { .services-header { grid-template-columns:1fr; gap:28px; } .terminal-body { min-height:0; padding:25px 20px; } .terminal-command { padding-bottom:24px; } }
+@media (max-width:520px) { .terminal-bar { grid-template-columns:1fr auto; } .terminal-bar > span:first-of-type { justify-self:end; } .terminal-session { display:none; } .command-output { grid-template-columns:1fr; gap:8px; padding:17px; } .command-line { gap:5px 7px; font-size:11px; } ul { display:grid; grid-template-columns:1fr 1fr; gap:7px; } }
 </style>

@@ -1,6 +1,44 @@
 <script setup lang="ts">
+import { onBeforeUnmount, onMounted, ref } from "vue";
 import { projects } from "~/data/home";
 import ArrowUpRightIcon from "~/components/ui/ArrowUpRightIcon.vue";
+
+const projectCards = ref<HTMLElement[]>([]);
+let frame = 0;
+
+const setProjectCard = (element: unknown, index: number) => {
+  if (element instanceof HTMLElement) projectCards.value[index] = element;
+};
+
+const updateProjectMotion = () => {
+  const viewportHeight = window.innerHeight;
+
+  projectCards.value.forEach((card) => {
+    const rect = card.getBoundingClientRect();
+    const progress = Math.min(1, Math.max(0, (viewportHeight - rect.top) / (viewportHeight * 0.72)));
+    card.style.setProperty("--card-rotate", `${(1 - progress) * 10}deg`);
+    card.style.setProperty("--card-scale", `${0.9 + progress * 0.1}`);
+    card.style.setProperty("--card-lift", `${(1 - progress) * 72}px`);
+  });
+};
+
+const scheduleProjectMotion = () => {
+  cancelAnimationFrame(frame);
+  frame = requestAnimationFrame(updateProjectMotion);
+};
+
+onMounted(() => {
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  updateProjectMotion();
+  window.addEventListener("scroll", scheduleProjectMotion, { passive: true });
+  window.addEventListener("resize", scheduleProjectMotion);
+});
+
+onBeforeUnmount(() => {
+  cancelAnimationFrame(frame);
+  window.removeEventListener("scroll", scheduleProjectMotion);
+  window.removeEventListener("resize", scheduleProjectMotion);
+});
 </script>
 
 <template>
@@ -15,7 +53,8 @@ import ArrowUpRightIcon from "~/components/ui/ArrowUpRightIcon.vue";
       </div>
 
       <div class="projects-list">
-        <article v-for="project in projects" :key="project.title" class="project-card">
+        <div v-for="(project, index) in projects" :key="project.title" class="project-stage">
+        <article :ref="(element) => setProjectCard(element, index)" class="project-card">
           <div class="project-content">
             <span class="project-number">{{ project.number }}</span>
             <div class="project-category">{{ project.category }}</div>
@@ -47,6 +86,7 @@ import ArrowUpRightIcon from "~/components/ui/ArrowUpRightIcon.vue";
             </div>
           </a>
         </article>
+        </div>
       </div>
     </div>
   </section>
@@ -56,8 +96,9 @@ import ArrowUpRightIcon from "~/components/ui/ArrowUpRightIcon.vue";
 .projects-section { border-top:1px solid var(--nex4-border); background:#050805; }
 .projects-header { display:grid; grid-template-columns:1fr 400px; align-items:end; gap:60px; margin-bottom:70px; }
 .projects-header > p { color:var(--nex4-text-secondary); font-size:16px; line-height:1.8; }
-.projects-list { display:grid; gap:28px; }
-.project-card { min-height:560px; display:grid; grid-template-columns:.88fr 1.12fr; align-items:center; gap:70px; padding:60px; border:1px solid var(--nex4-border); border-radius:24px; background:linear-gradient(145deg,rgba(255,255,255,.025),rgba(255,255,255,.005)); transition:border-color .3s ease,box-shadow .3s ease; }
+.projects-list { display:grid; gap:55px; perspective:1200px; }
+.project-stage { perspective:1200px; transform-style:preserve-3d; }
+.project-card { --card-rotate:10deg; --card-scale:.9; --card-lift:72px; min-height:560px; display:grid; grid-template-columns:.88fr 1.12fr; align-items:center; gap:70px; padding:60px; border:1px solid var(--nex4-border); border-radius:24px; background:linear-gradient(145deg,rgba(255,255,255,.035),rgba(255,255,255,.006)); box-shadow:0 45px 100px rgba(0,0,0,.34); transform:translateY(var(--card-lift)) rotateX(var(--card-rotate)) scale(var(--card-scale)); transform-origin:50% 0%; transform-style:preserve-3d; will-change:transform; transition:border-color var(--motion-fast) ease,box-shadow var(--motion-fast) ease; }
 .project-card:hover { border-color:rgba(50,239,69,.2); box-shadow:0 35px 100px rgba(0,0,0,.22); }
 .project-content { position:relative; }
 .project-number { position:absolute; top:-72px; left:-10px; color:rgba(255,255,255,.025); font-family:"Manrope",sans-serif; font-size:120px; font-weight:800; }
@@ -85,5 +126,6 @@ import ArrowUpRightIcon from "~/components/ui/ArrowUpRightIcon.vue";
 
 @media (max-width:1000px) { .project-card { grid-template-columns:1fr; } }
 @media (max-width:850px) { .projects-header { grid-template-columns:1fr; gap:30px; } .project-card { padding:40px; } }
-@media (max-width:600px) { .project-card { min-height:auto; gap:40px; padding:38px 18px 18px; } .project-number { top:-35px; font-size:78px; } .project-visual { padding:8px; } .domain-card { min-height:280px; padding:20px; } .domain-status { top:14px; left:14px; } .domain-arrow { right:16px; bottom:18px; width:34px; height:34px; } .domain-info { max-width:calc(100% - 46px); } .domain-info strong { font-size:18px; } }
+@media (max-width:600px) { .projects-list { gap:38px; } .project-card { min-height:auto; gap:40px; padding:38px 18px 18px; } .project-number { top:-35px; font-size:78px; } .project-visual { padding:8px; } .domain-card { min-height:280px; padding:20px; } .domain-status { top:14px; left:14px; } .domain-arrow { right:16px; bottom:18px; width:34px; height:34px; } .domain-info { max-width:calc(100% - 46px); } .domain-info strong { font-size:18px; } }
+@media (prefers-reduced-motion:reduce) { .project-card { transform:none; } }
 </style>

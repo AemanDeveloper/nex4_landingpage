@@ -36,4 +36,12 @@
     );
 
   --container-width: 1280px;
+
+  --motion-fast: 260ms;
+
+  --motion-medium: 620ms;
+
+  --motion-slow: 900ms;
+
+  --motion-ease: cubic-bezier(0.22, 1, 0.36, 1);
 }
