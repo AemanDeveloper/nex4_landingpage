@@ -5,6 +5,7 @@ import ArrowUpRightIcon from "~/components/ui/ArrowUpRightIcon.vue";
 
 const projectCards = ref<HTMLElement[]>([]);
 let frame = 0;
+let mobileObserver: IntersectionObserver | undefined;
 
 const setProjectCard = (element: unknown, index: number) => {
   if (element instanceof HTMLElement) projectCards.value[index] = element;
@@ -28,7 +29,27 @@ const scheduleProjectMotion = () => {
 };
 
 onMounted(() => {
-  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    projectCards.value.forEach((card) => card.classList.add("is-mobile-visible"));
+    return;
+  }
+
+  if (window.matchMedia("(max-width: 700px)").matches) {
+    mobileObserver = new IntersectionObserver(
+      (entries, observer) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          entry.target.classList.add("is-mobile-visible");
+          observer.unobserve(entry.target);
+        });
+      },
+      { rootMargin: "0px 0px -8%", threshold: 0.12 },
+    );
+
+    projectCards.value.forEach((card) => mobileObserver?.observe(card));
+    return;
+  }
+
   updateProjectMotion();
   window.addEventListener("scroll", scheduleProjectMotion, { passive: true });
   window.addEventListener("resize", scheduleProjectMotion);
@@ -36,6 +57,7 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   cancelAnimationFrame(frame);
+  mobileObserver?.disconnect();
   window.removeEventListener("scroll", scheduleProjectMotion);
   window.removeEventListener("resize", scheduleProjectMotion);
 });
@@ -134,6 +156,6 @@ onBeforeUnmount(() => {
 
 @media (max-width:1000px) { .project-card { grid-template-columns:1fr; } }
 @media (max-width:850px) { .projects-header { grid-template-columns:1fr; gap:30px; } .project-card { padding:40px; } }
-@media (max-width:600px) { .projects-list { gap:38px; } .project-card { min-height:auto; gap:40px; padding:38px 18px 18px; } .project-number { top:-35px; font-size:78px; } .project-visual { padding:8px; } .domain-card { min-height:280px; padding:20px; } .domain-status { top:14px; left:14px; } .domain-arrow { right:16px; bottom:18px; width:34px; height:34px; } .domain-info { max-width:calc(100% - 46px); } .domain-info strong { font-size:18px; } }
-@media (prefers-reduced-motion:reduce) { .project-card { transform:none; } }
+@media (max-width:600px) { .projects-list { gap:46px; } .project-stage { overflow:visible; } .project-card { min-height:auto; gap:40px; padding:38px 18px 18px; opacity:.15; transform:translateY(54px) rotateX(7deg) scale(.94); transform-origin:50% 20%; transition:transform .85s var(--motion-ease),opacity .65s ease,border-color var(--motion-fast) ease,box-shadow var(--motion-fast) ease; } .project-card.is-mobile-visible { opacity:1; transform:translateY(0) rotateX(0) scale(1); } .project-number { top:-35px; font-size:78px; } .project-visual { padding:8px; } .domain-card { min-height:280px; padding:20px; } .domain-status { top:14px; left:14px; } .domain-arrow { right:16px; bottom:18px; width:34px; height:34px; } .domain-info { max-width:calc(100% - 46px); } .domain-info strong { font-size:18px; } }
+@media (prefers-reduced-motion:reduce) { .project-card { opacity:1; transform:none; } }
 </style>

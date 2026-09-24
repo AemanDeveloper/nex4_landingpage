@@ -254,15 +254,25 @@ h2 span {
 
 @media (max-width: 600px) {
   .contact-section {
-    min-height: 650px;
+    min-height: auto;
 
-    padding: 110px 0;
+    padding: 96px 0 calc(82px + env(safe-area-inset-bottom));
+
+    scroll-margin-top: 76px;
   }
 
   h2 {
-    font-size: 49px;
+    font-size: clamp(42px, 13vw, 50px);
+
+    line-height: 1.02;
 
     letter-spacing: -3px;
+  }
+
+  .contact-content > p {
+    margin-top: 24px;
+
+    line-height: 1.7;
   }
 
   .contact-actions {
@@ -274,10 +284,52 @@ h2 span {
     width: 100%;
   }
 
-  .contact-services {
-    margin-top: 55px;
+  .contact-primary {
+    padding: 0 16px;
 
-    gap: 10px;
+    font-size: clamp(12px, 3.55vw, 14px);
+
+    white-space: nowrap;
+  }
+
+  .contact-services {
+    display: grid;
+
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    margin-top: 48px;
+
+    gap: 14px 10px;
+
+    font-size: 10px;
+
+    letter-spacing: 0.9px;
+  }
+
+  .contact-services span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+
+    white-space: nowrap;
+  }
+
+  .contact-services span::before {
+    content: "";
+
+    width: 4px;
+    height: 4px;
+
+    flex: 0 0 auto;
+
+    border-radius: 50%;
+
+    background: var(--nex4-green);
+  }
+
+  .contact-services i {
+    display: none;
   }
 }
 </style>
