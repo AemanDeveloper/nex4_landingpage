@@ -5,43 +5,32 @@ import ArrowUpRightIcon from "~/components/ui/ArrowUpRightIcon.vue";
 <template>
   <section id="home" class="hero">
     <div class="background-grid" aria-hidden="true" />
-    <div class="glow" aria-hidden="true" />
+    <div class="aurora" aria-hidden="true">
+      <div class="aurora-layer" />
+      <div class="aurora-glow" />
+    </div>
 
     <div class="container hero-container">
       <div class="hero-content">
         <div class="eyebrow"><span /> NEX4 DIGITAL STUDIO</div>
-        <h1>We build digital <em>products</em> that help businesses grow.</h1>
+        <h1>We build digital <em>products</em><br />that move businesses forward.</h1>
         <p>Websites, mobile applications and digital marketing brought together by one creative technology team.</p>
         <div class="hero-actions">
           <a href="#contact" class="primary-button">Start a Project <ArrowUpRightIcon /></a>
           <a href="#work" class="secondary-button">View Our Work</a>
         </div>
-      </div>
 
-      <div class="hero-showcase">
-        <div class="signal-frame" aria-hidden="true" />
-        <div class="studio-panel">
-          <div class="panel-heading">
-            <span>NEX4 / LIVE NETWORK</span>
-            <span class="availability"><i />ONLINE</span>
-          </div>
-
-          <div class="network-mark">
-            <img src="/images/nex4-icon.png" alt="NEX4" />
-          </div>
-
-          <div class="project-signals">
-            <a href="https://nutritrack.nex4.my" target="_blank" rel="noopener noreferrer">
-              <span class="signal-index">01</span>
-              <span><strong>NutriTrack</strong><small>Live application</small></span>
-              <b aria-hidden="true"><ArrowUpRightIcon /></b>
-            </a>
-            <a href="https://crm.nex4.my" target="_blank" rel="noopener noreferrer">
-              <span class="signal-index">02</span>
-              <span><strong>Nex4 CRM</strong><small>Public beta</small></span>
-              <b aria-hidden="true"><ArrowUpRightIcon /></b>
-            </a>
-          </div>
+        <div class="project-signals" aria-label="Live NEX4 products">
+          <a href="https://nutritrack.nex4.my" target="_blank" rel="noopener noreferrer">
+            <span class="signal-status"><i />LIVE</span>
+            <strong>NutriTrack</strong>
+            <ArrowUpRightIcon />
+          </a>
+          <a href="https://crm.nex4.my" target="_blank" rel="noopener noreferrer">
+            <span class="signal-status"><i />BETA</span>
+            <strong>Nex4 CRM</strong>
+            <ArrowUpRightIcon />
+          </a>
         </div>
       </div>
     </div>
@@ -56,43 +45,50 @@ import ArrowUpRightIcon from "~/components/ui/ArrowUpRightIcon.vue";
 </template>
 
 <style scoped>
-.hero { position: relative; min-height: 100vh; display: flex; align-items: center; overflow: hidden; padding: 145px 0 100px; background: var(--nex4-bg); }
-.background-grid { position: absolute; inset: -64px; background-image: linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px); background-size: 64px 64px; mask-image: linear-gradient(to bottom,transparent,black 15%,black 75%,transparent); animation:grid-drift 18s linear infinite; }
-.glow { position: absolute; width: 760px; height: 760px; right: -380px; top: -160px; border-radius: 50%; background: rgba(0,150,45,.13); filter: blur(150px); animation:soft-pulse 8s ease-in-out infinite; }
-.hero-container { position: relative; z-index: 2; display: grid; grid-template-columns: 1.05fr .95fr; gap: 90px; align-items: center; }
-.eyebrow { display: flex; align-items: center; gap: 10px; margin-bottom: 27px; color: var(--nex4-text-secondary); font-size: 12px; font-weight: 700; letter-spacing: 2px; }
+.hero { position:relative; min-height:max(720px,100svh); display:flex; align-items:center; overflow:hidden; padding:150px 0 120px; background:radial-gradient(circle at 50% 20%,rgba(4,28,11,.7),transparent 44%),var(--nex4-bg); }
+.background-grid { position:absolute; inset:-64px; opacity:.55; background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px); background-size:64px 64px; mask-image:linear-gradient(to bottom,transparent,black 20%,black 82%,transparent); animation:grid-drift 18s linear infinite; }
+.aurora { position:absolute; z-index:1; inset:0; overflow:hidden; pointer-events:none; mask-image:linear-gradient(to bottom,black 0%,black 72%,transparent 100%); }
+.aurora-layer { position:absolute; inset:-45%; opacity:0; background-image:repeating-linear-gradient(108deg,transparent 0%,transparent 8%,rgba(3,8,4,.92) 10%,transparent 13%,transparent 20%),repeating-linear-gradient(108deg,#32ef45 8%,#0c8e37 14%,#075224 19%,#83ff8e 24%,#32ef45 30%); background-size:300% 220%,200% 180%; background-position:50% 50%,50% 50%; filter:blur(34px) saturate(1.15); transform:rotate(-8deg) scale(1.12); mix-blend-mode:screen; animation:aurora-enter 1.2s .05s ease-out forwards,aurora-shift 32s 1.2s linear infinite; }
+.aurora-layer::after { content:""; position:absolute; inset:0; background:radial-gradient(ellipse at 50% 15%,rgba(50,239,69,.46),rgba(5,7,5,0) 54%); }
+.aurora-glow { position:absolute; top:-18%; left:50%; width:min(1040px,120vw); height:700px; transform:translateX(-50%); border-radius:50%; background:radial-gradient(ellipse,rgba(50,239,69,.17),rgba(0,134,46,.06) 45%,transparent 72%); filter:blur(45px); animation:soft-pulse 8s ease-in-out infinite; }
+.hero-container { position:relative; z-index:2; display:flex; justify-content:center; }
+.hero-content { width:min(100%,1080px); padding-top:125px; text-align:center; animation:hero-enter .85s .35s both cubic-bezier(.2,.7,.2,1); }
+.eyebrow { display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:24px; color:var(--nex4-text-secondary); font-size:12px; font-weight:700; letter-spacing:2px; }
 .eyebrow span { width: 7px; height: 7px; border-radius: 50%; background: var(--nex4-green); box-shadow: 0 0 14px rgba(50,239,69,.8); }
-h1 { max-width: 720px; font-family: "Manrope",sans-serif; font-size: clamp(54px,5vw,78px); font-weight: 600; line-height: 1.02; letter-spacing: -4px; }
+h1 { max-width:1050px; margin:0 auto; font-family:"Manrope",sans-serif; font-size:clamp(58px,6.3vw,92px); font-weight:600; line-height:.98; letter-spacing:-5.5px; text-wrap:balance; }
 h1 em { color: transparent; font-style: normal; background: var(--nex4-gradient); background-clip: text; -webkit-background-clip: text; }
-.hero-content { animation:hero-enter .8s .1s both cubic-bezier(.2,.7,.2,1); }
-.hero-content > p { max-width: 570px; margin-top: 28px; color: var(--nex4-text-secondary); font-size: 17px; line-height: 1.8; }
-.hero-actions { display: flex; gap: 12px; margin-top: 36px; }
-.hero-showcase { position: relative; min-height: 560px; display: grid; place-items: center; }
-.signal-frame { position: absolute; inset: 54px 20px; border: 1px solid rgba(50,239,69,.1); border-radius: 30px; transform: rotate(4deg); animation:frame-float 8s ease-in-out infinite; }
-.studio-panel { position: relative; z-index: 2; width: min(100%,470px); padding: 20px; border: 1px solid rgba(255,255,255,.1); border-radius: 24px; background: linear-gradient(145deg,rgba(255,255,255,.05),rgba(255,255,255,.012)); box-shadow: 0 50px 100px rgba(0,0,0,.5); backdrop-filter: blur(20px); animation:panel-enter .9s .2s both cubic-bezier(.2,.7,.2,1),panel-float 7s 1.1s ease-in-out infinite; }
-.panel-heading { display: flex; justify-content: space-between; align-items: center; padding: 0 4px 18px; color: var(--nex4-text-muted); font-size: 12px; letter-spacing: 1.1px; }
-.availability { display: flex; align-items: center; gap: 6px; }
-.availability i { width: 6px; height: 6px; border-radius: 50%; background: var(--nex4-green); box-shadow: 0 0 8px var(--nex4-green); animation:status-pulse 1.8s ease-in-out infinite; }
-.network-mark { position: relative; min-height: 255px; display: flex; align-items: center; justify-content: center; gap: 2px; overflow: hidden; border-radius: 17px; background: linear-gradient(rgba(50,239,69,.075) 1px,transparent 1px),linear-gradient(90deg,rgba(50,239,69,.075) 1px,transparent 1px),#030603; background-size: 32px 32px; }
-.network-mark::before { content:""; position:absolute; width:270px; height:270px; top:-90px; left:50%; transform:translateX(-50%); border-radius:50%; background:rgba(50,239,69,.18); filter:blur(80px); }
-.network-mark img { position:relative; z-index:1; width:min(58%,220px); aspect-ratio:1; border-radius:20px; object-fit:cover; box-shadow:0 24px 70px rgba(0,0,0,.45); animation:logo-float 5s ease-in-out infinite; }
-.project-signals { display:grid; grid-template-columns:1fr 1fr; gap:10px; padding-top:16px; }
-.project-signals a { min-height:70px; display:grid; grid-template-columns:auto 1fr auto; align-items:center; gap:10px; padding:12px; border:1px solid var(--nex4-border); border-radius:12px; background:rgba(255,255,255,.015); transition:.25s ease; }
+.hero-content > p { max-width:650px; margin:28px auto 0; color:var(--nex4-text-secondary); font-size:17px; line-height:1.75; }
+.hero-actions { display:flex; justify-content:center; gap:12px; margin-top:34px; }
+.project-signals { width:min(100%,530px); display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:34px auto 0; }
+.project-signals a { min-height:60px; display:grid; grid-template-columns:auto 1fr auto; align-items:center; gap:12px; padding:10px 14px; border:1px solid var(--nex4-border); border-radius:14px; background:rgba(6,12,7,.62); text-align:left; backdrop-filter:blur(16px); transition:.25s ease; }
 .project-signals a:hover,.project-signals a:focus-visible { border-color:var(--nex4-border-green); background:rgba(50,239,69,.04); outline:none; }
-.project-signals strong,.project-signals small { display:block; }
 .project-signals strong { font-size:14px; }
-.project-signals small { margin-top:2px; color:var(--nex4-text-muted); font-size:12px; }
-.signal-index,.project-signals b { color:var(--nex4-green); font-size:12px; }
+.project-signals > a > :deep(svg) { color:var(--nex4-green); font-size:15px; }
+.signal-status { display:flex; align-items:center; gap:6px; color:var(--nex4-text-muted); font-size:10px; font-weight:700; letter-spacing:.8px; }
+.signal-status i { width:6px; height:6px; border-radius:50%; background:var(--nex4-green); box-shadow:0 0 9px rgba(50,239,69,.75); animation:status-pulse 1.8s ease-in-out infinite; }
 .hero-services { position:absolute; z-index:3; bottom:0; width:100%; border-top:1px solid var(--nex4-border); background:rgba(255,255,255,.01); }
 .services-row { min-height:65px; display:flex; align-items:center; justify-content:space-between; gap:20px; color:var(--nex4-text-muted); font-size:12px; font-weight:600; letter-spacing:1px; text-transform:uppercase; }
 .services-row i { width:4px; height:4px; flex-shrink:0; border-radius:50%; background:var(--nex4-green); }
 
 @keyframes hero-enter { from { opacity:0; transform:translateY(28px); } }
-@keyframes panel-enter { from { opacity:0; transform:translateY(34px) scale(.97); } }
-@keyframes panel-float { 50% { transform:translateY(-8px); } }
-@keyframes frame-float { 50% { transform:rotate(2.5deg) scale(1.015); } }
-@keyframes logo-float { 50% { transform:translateY(-7px) scale(1.015); } }
+@keyframes aurora-enter { from { opacity:0; transform:rotate(-8deg) scale(.9); } to { opacity:.32; transform:rotate(-8deg) scale(1.12); } }
+@keyframes aurora-shift { from { background-position:50% 50%,50% 50%; } to { background-position:350% 50%,350% 50%; } }
 
-@media (max-width:1050px) { .hero-container { grid-template-columns:1fr; gap:50px; } .hero-showcase { min-height:500px; } }
-@media (max-width:700px) { .hero { min-height:auto; padding:125px 0 115px; } .hero-container { gap:45px; } h1 { font-size:46px; letter-spacing:-2.7px; } .hero-content > p { font-size:16px; } .hero-actions { flex-direction:column; } .hero-actions a { width:100%; } .hero-showcase { min-height:420px; } .studio-panel { padding:14px; } .network-mark { min-height:205px; } .project-signals { grid-template-columns:1fr; } .project-signals a { min-height:58px; } .signal-frame { inset:30px 10px; } .services-row { overflow:hidden; justify-content:flex-start; white-space:nowrap; } }
+@media (max-width:700px) {
+  .hero { min-height:max(760px,100svh); padding:120px 0 105px; }
+  .aurora-layer { inset:-35% -90%; filter:blur(28px) saturate(1.1); }
+  .aurora-glow { top:-8%; width:150vw; height:520px; }
+  .hero-content { padding-top:86px; }
+  .eyebrow { margin-bottom:20px; font-size:11px; }
+  h1 { font-size:clamp(42px,12vw,52px); line-height:1.01; letter-spacing:-3.1px; }
+  h1 br { display:none; }
+  .hero-content > p { margin-top:23px; font-size:16px; line-height:1.65; }
+  .hero-actions { flex-direction:column; margin-top:28px; }
+  .hero-actions a { width:100%; }
+  .project-signals { margin-top:22px; gap:8px; }
+  .project-signals a { min-height:56px; padding:9px 10px; gap:8px; }
+  .project-signals strong { font-size:13px; }
+  .signal-status { font-size:9px; }
+  .services-row { overflow:hidden; justify-content:flex-start; white-space:nowrap; }
+}
 </style>

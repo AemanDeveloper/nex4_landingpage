@@ -78,8 +78,8 @@ export const team = [
 
   {
     name: "Syed Ali",
-    role: "NEX4 Team",
-    department: "Projects / Operations",
+    role: "Marketing Executive",
+    department: "Marketing / Growth",
     initials: "SA",
     portfolioUrl: "https://portfolio-ali.nex4.my",
     portfolioLabel: "View portfolio",
@@ -87,8 +87,8 @@ export const team = [
 
   {
     name: "Kirthy",
-    role: "Marketing",
-    department: "Marketing / Brand",
+    role: "Sales Executive",
+    department: "Sales / Partnerships",
     initials: "KI",
     portfolioUrl: null,
     portfolioLabel: "Portfolio coming soon",
