@@ -46,6 +46,8 @@ export const projects = [
     linkText: "Open NutriTrack",
     status: "Live application",
     domain: "nutritrack.nex4.my",
+    preview: "/images/projects/nutritrack-preview.png",
+    previewAlt: "Preview of the NutriTrack website",
   },
 
   {
@@ -59,6 +61,8 @@ export const projects = [
     linkText: "Open public beta",
     status: "Public beta",
     domain: "crm.nex4.my",
+    preview: "/images/projects/crm-preview.png",
+    previewAlt: "Preview of the NEX4 Marketing CRM website",
   },
 ];
 

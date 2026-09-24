@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref } from "vue";
+import ArrowUpRightIcon from "~/components/ui/ArrowUpRightIcon.vue";
 
 const menuOpen = ref(false);
 const closeMenu = () => (menuOpen.value = false);
@@ -26,7 +27,7 @@ onBeforeUnmount(() => window.removeEventListener("keydown", onKeydown));
         <a href="#team" @click="closeMenu">Team</a>
       </nav>
 
-      <a href="#contact" class="nav-contact">Start a Project <span aria-hidden="true">↗</span></a>
+      <a href="#contact" class="nav-contact">Start a Project <ArrowUpRightIcon /></a>
 
       <button class="menu-button" type="button" aria-label="Toggle menu" :aria-expanded="menuOpen" aria-controls="primary-navigation" @click="menuOpen = !menuOpen">
         <span /><span />
@@ -45,7 +46,7 @@ onBeforeUnmount(() => window.removeEventListener("keydown", onKeydown));
 .nav-links a:hover { color: var(--nex4-green); }
 .nav-contact { display: flex; align-items: center; gap: 10px; padding: 10px 18px; border: 1px solid var(--nex4-border); border-radius: 999px; font-size: 14px; font-weight: 600; transition: .25s ease; }
 .nav-contact:hover { border-color: var(--nex4-border-green); background: rgba(50,239,69,.05); }
-.nav-contact span { color: var(--nex4-green); }
+.nav-contact :deep(svg) { color: var(--nex4-green); }
 .menu-button { display: none; padding: 10px; border: 0; background: transparent; }
 .menu-button span { width: 22px; height: 1px; background: white; }
 

@@ -1,3 +1,7 @@
+<script setup lang="ts">
+import ArrowUpRightIcon from "~/components/ui/ArrowUpRightIcon.vue";
+</script>
+
 <template>
   <section id="contact" class="contact-section">
     <div class="contact-grid" />
@@ -21,7 +25,7 @@
         <a href="mailto:hello@nex4.my" class="contact-primary">
           Email NEX4
 
-          <span aria-hidden="true">↗</span>
+          <ArrowUpRightIcon />
         </a>
       </div>
 

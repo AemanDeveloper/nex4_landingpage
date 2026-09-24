@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { team } from "~/data/home";
+import ArrowUpRightIcon from "~/components/ui/ArrowUpRightIcon.vue";
 </script>
 
 <template>
@@ -29,7 +30,7 @@ import { team } from "~/data/home";
 
           <div class="team-action">
             <a v-if="member.portfolioUrl" :href="member.portfolioUrl" target="_blank" rel="noopener noreferrer">
-              {{ member.portfolioLabel }} <span aria-hidden="true">↗</span>
+              {{ member.portfolioLabel }} <ArrowUpRightIcon />
             </a>
             <span v-else class="portfolio-disabled" aria-disabled="true">{{ member.portfolioLabel }}</span>
           </div>
@@ -60,7 +61,7 @@ import { team } from "~/data/home";
 .team-action { padding:0 22px 22px; }
 .team-action a,.portfolio-disabled { min-height:46px; display:flex; align-items:center; justify-content:space-between; padding:0 14px; border:1px solid var(--nex4-border); border-radius:10px; color:var(--nex4-text-secondary); font-size:14px; }
 .team-action a:hover,.team-action a:focus-visible { border-color:var(--nex4-border-green); color:var(--nex4-text); outline:none; }
-.team-action a span { color:var(--nex4-green); }
+.team-action a :deep(svg) { color:var(--nex4-green); }
 .portfolio-disabled { color:var(--nex4-text-muted); cursor:not-allowed; }
 
 @media (max-width:900px) { .team-header { grid-template-columns:1fr; gap:30px; } .team-grid { grid-template-columns:1fr; } .team-identity { height:300px; } }

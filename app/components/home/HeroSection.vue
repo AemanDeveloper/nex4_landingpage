@@ -1,3 +1,7 @@
+<script setup lang="ts">
+import ArrowUpRightIcon from "~/components/ui/ArrowUpRightIcon.vue";
+</script>
+
 <template>
   <section id="home" class="hero">
     <div class="background-grid" aria-hidden="true" />
@@ -9,7 +13,7 @@
         <h1>We build digital <em>products</em> that help businesses grow.</h1>
         <p>Websites, mobile applications and digital marketing brought together by one creative technology team.</p>
         <div class="hero-actions">
-          <a href="#contact" class="primary-button">Start a Project <span aria-hidden="true">↗</span></a>
+          <a href="#contact" class="primary-button">Start a Project <ArrowUpRightIcon /></a>
           <a href="#work" class="secondary-button">View Our Work</a>
         </div>
       </div>
@@ -30,12 +34,12 @@
             <a href="https://nutritrack.nex4.my" target="_blank" rel="noopener noreferrer">
               <span class="signal-index">01</span>
               <span><strong>NutriTrack</strong><small>Live application</small></span>
-              <b aria-hidden="true">↗</b>
+              <b aria-hidden="true"><ArrowUpRightIcon /></b>
             </a>
             <a href="https://crm.nex4.my" target="_blank" rel="noopener noreferrer">
               <span class="signal-index">02</span>
               <span><strong>Nex4 CRM</strong><small>Public beta</small></span>
-              <b aria-hidden="true">↗</b>
+              <b aria-hidden="true"><ArrowUpRightIcon /></b>
             </a>
           </div>
         </div>
