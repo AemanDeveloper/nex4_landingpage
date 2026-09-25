@@ -12,8 +12,8 @@ import ArrowUpRightIcon from "~/components/ui/ArrowUpRightIcon.vue";
       <div class="contact-label">HAVE AN IDEA?</div>
 
       <h2>
-        Let's build something
-        <span> together. </span>
+        <span class="contact-heading-line">Let's build something</span>
+        <span class="contact-heading-accent">together.</span>
       </h2>
 
       <p>
@@ -100,7 +100,11 @@ h2 {
   letter-spacing: -5px;
 }
 
-h2 span {
+h2 .contact-heading-line {
+  display: block;
+}
+
+h2 .contact-heading-accent {
   display: block;
 
   color: transparent;
@@ -110,6 +114,8 @@ h2 span {
   background-clip: text;
 
   -webkit-background-clip: text;
+
+  padding-bottom: 0.08em;
 }
 
 .contact-content > p {
@@ -262,11 +268,19 @@ h2 span {
   }
 
   h2 {
-    font-size: clamp(42px, 13vw, 50px);
+    width: 100%;
 
-    line-height: 1.02;
+    font-size: clamp(38px, 11.5vw, 48px);
 
-    letter-spacing: -3px;
+    line-height: 1.06;
+
+    letter-spacing: -2.4px;
+
+    text-wrap: balance;
+  }
+
+  h2 .contact-heading-line {
+    white-space: normal;
   }
 
   .contact-content > p {
