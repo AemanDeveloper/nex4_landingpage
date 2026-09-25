@@ -63,7 +63,7 @@ import ArrowUpRightIcon from "~/components/ui/ArrowUpRightIcon.vue";
 
   border-top: 1px solid var(--nex4-border);
 
-  background: #030503;
+  background: #03050a;
 }
 
 .contact-content {
@@ -162,9 +162,9 @@ h2 span {
 
   background: var(--nex4-green);
 
-  color: #021003;
+  color: var(--nex4-navy);
 
-  box-shadow: 0 15px 50px rgba(64, 240, 68, 0.15);
+  box-shadow: 0 15px 50px rgba(221, 168, 18, 0.18);
 }
 
 .contact-primary:hover {
@@ -228,8 +228,8 @@ h2 span {
 
   background: radial-gradient(
     circle,
-    rgba(64, 240, 68, 0.13),
-    rgba(0, 104, 32, 0.035) 40%,
+    rgba(221, 168, 18, 0.14),
+    rgba(17, 24, 39, 0.08) 40%,
     transparent 70%
   );
 

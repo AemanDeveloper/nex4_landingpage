@@ -1,38 +1,44 @@
 :root {
-  --nex4-black: #020302;
+  --nex4-black: #03050a;
 
-  --nex4-bg: #050705;
+  --nex4-bg: #05070d;
 
-  --nex4-bg-soft: #080b08;
+  --nex4-bg-soft: #080c16;
 
-  --nex4-surface: #0b0f0c;
+  --nex4-surface: #0d1220;
 
-  --nex4-surface-2: #101512;
+  --nex4-surface-2: #121a2b;
 
-  --nex4-green: #32ef45;
+  --nex4-navy: #111827;
 
-  --nex4-green-bright: #43ff54;
+  --nex4-gold: #dda812;
 
-  --nex4-green-dark: #00862e;
+  --nex4-cream: #faf7f0;
 
-  --nex4-text: #f5f7f5;
+  --nex4-green: var(--nex4-gold);
 
-  --nex4-text-secondary: #9ba49d;
+  --nex4-green-bright: #f2c94c;
 
-  --nex4-text-muted: #626b64;
+  --nex4-green-dark: #9b7100;
+
+  --nex4-text: var(--nex4-cream);
+
+  --nex4-text-secondary: #aeb4c0;
+
+  --nex4-text-muted: #737b8c;
 
   --nex4-border:
     rgba(255, 255, 255, 0.08);
 
   --nex4-border-green:
-    rgba(50, 239, 69, 0.3);
+    rgba(221, 168, 18, 0.34);
 
   --nex4-gradient:
     linear-gradient(
       135deg,
-      #4cff56,
-      #24df42 45%,
-      #00852c
+      #fff1b8,
+      #dda812 48%,
+      #9b7100
     );
 
   --container-width: 1280px;

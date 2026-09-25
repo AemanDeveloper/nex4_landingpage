@@ -3,9 +3,8 @@
     <div class="container">
       <div class="footer-main">
         <div class="footer-brand-area">
-          <a href="#home" class="footer-logo">
-            <img src="/images/nex4-icon.png" alt="" class="footer-mark" />
-            <span> NEX4 </span>
+          <a href="#home" class="footer-logo" aria-label="NEX4 Digital Studio home">
+            <img src="/images/brand/nex4-logo-white.png" alt="NEX4 Digital Studio" class="footer-wordmark" />
           </a>
 
           <p>
@@ -71,7 +70,7 @@
 
   border-top: 1px solid var(--nex4-border);
 
-  background: #020402;
+  background: #03050a;
 }
 
 .footer-main {
@@ -97,11 +96,10 @@
   letter-spacing: -1.5px;
 }
 
-.footer-mark {
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
-  object-fit: cover;
+.footer-wordmark {
+  width: 150px;
+  height: auto;
+  object-fit: contain;
 }
 
 .footer-brand-area p {
@@ -193,7 +191,7 @@
 
   background: var(--nex4-green);
 
-  box-shadow: 0 0 8px rgba(64, 240, 68, 0.8);
+  box-shadow: 0 0 8px rgba(221, 168, 18, 0.8);
 }
 
 @media (max-width: 850px) {

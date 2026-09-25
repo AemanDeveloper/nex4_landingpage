@@ -14,14 +14,15 @@ export default defineNuxtConfig({
       meta: [
         {
           name: "theme-color",
-          content: "#050705",
+          content: "#05070d",
         },
         { name: "author", content: "NEX4" },
         { name: "application-name", content: "NEX4" },
         { name: "format-detection", content: "telephone=no" },
       ],
       link: [
-        { rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },
+        { rel: "icon", type: "image/png", href: "/images/nex4-icon.png" },
+        { rel: "apple-touch-icon", href: "/images/nex4-icon.png" },
         { rel: "manifest", href: "/site.webmanifest" },
       ],
     },

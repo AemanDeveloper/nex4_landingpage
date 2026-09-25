@@ -28,12 +28,12 @@ defineProps<{
   border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 999px;
   background:
-    radial-gradient(circle at 16% 12%, #83ff8e, transparent 38%),
-    radial-gradient(circle at 82% 20%, #32ef45, transparent 42%),
-    radial-gradient(circle at 52% 120%, #00862e, transparent 55%),
-    #20c83a;
-  box-shadow: 0 14px 45px rgba(50, 239, 69, 0.2), inset 0 1px rgba(255, 255, 255, 0.45);
-  color: #031005;
+    radial-gradient(circle at 16% 12%, #fff0ae, transparent 38%),
+    radial-gradient(circle at 82% 20%, #dda812, transparent 42%),
+    radial-gradient(circle at 52% 120%, #8f6800, transparent 55%),
+    #c99508;
+  box-shadow: 0 14px 45px rgba(221, 168, 18, 0.22), inset 0 1px rgba(255, 255, 255, 0.45);
+  color: #111827;
   font-size: 14px;
   font-weight: 700;
   transition: transform var(--motion-fast) var(--motion-ease), box-shadow var(--motion-fast) var(--motion-ease);
@@ -64,7 +64,7 @@ defineProps<{
 
 .noise-button:hover {
   transform: translateY(-3px) scale(1.015);
-  box-shadow: 0 20px 55px rgba(50, 239, 69, 0.28), inset 0 1px rgba(255, 255, 255, 0.52);
+  box-shadow: 0 20px 55px rgba(221, 168, 18, 0.3), inset 0 1px rgba(255, 255, 255, 0.52);
 }
 
 .noise-button:hover::after { transform: translateX(120%); }

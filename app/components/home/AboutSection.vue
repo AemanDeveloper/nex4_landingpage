@@ -77,7 +77,7 @@
   background:
     radial-gradient(
       circle at 10% 50%,
-      rgba(64, 240, 68, 0.05),
+      rgba(221, 168, 18, 0.06),
       transparent 32%
     ),
     var(--nex4-bg);
@@ -180,7 +180,7 @@
 
   border-radius: 50%;
 
-  background: rgba(64, 240, 68, 0.08);
+  background: rgba(221, 168, 18, 0.09);
 
   filter: blur(130px);
 }

@@ -61,20 +61,20 @@ import NoiseBackgroundButton from "~/components/ui/NoiseBackgroundButton.vue";
 .hero-container { position:relative; z-index:2; display:flex; justify-content:center; }
 .hero-content { width:min(100%,1080px); padding-top:125px; text-align:center; animation:hero-enter var(--motion-slow) .3s both var(--motion-ease); }
 .eyebrow { display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:24px; color:var(--nex4-text-secondary); font-size:12px; font-weight:700; letter-spacing:2px; }
-.eyebrow span { width: 7px; height: 7px; border-radius: 50%; background: var(--nex4-green); box-shadow: 0 0 14px rgba(50,239,69,.8); }
+.eyebrow span { width: 7px; height: 7px; border-radius: 50%; background: var(--nex4-green); box-shadow: 0 0 14px rgba(221,168,18,.8); }
 h1 { max-width:1050px; margin:0 auto; font-family:"Manrope",sans-serif; font-size:clamp(58px,6.3vw,92px); font-weight:600; line-height:.98; letter-spacing:-5.5px; text-wrap:balance; }
 h1 em { color: transparent; font-style: normal; background: var(--nex4-gradient); background-clip: text; -webkit-background-clip: text; }
 .hero-content > p { max-width:650px; margin:28px auto 0; color:var(--nex4-text-secondary); font-size:17px; line-height:1.75; }
 .hero-actions { display:flex; justify-content:center; gap:12px; margin-top:34px; }
 .project-signals { width:min(100%,530px); display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:34px auto 0; }
 .project-signals a { position:relative; isolation:isolate; min-height:60px; display:grid; grid-template-columns:auto 1fr auto; align-items:center; gap:12px; overflow:hidden; padding:10px 14px; border:1px solid transparent; border-radius:14px; text-align:left; backdrop-filter:blur(16px); transition:transform var(--motion-fast) var(--motion-ease),box-shadow var(--motion-fast) var(--motion-ease); }
-.project-signals a::before { content:""; position:absolute; z-index:-2; inset:-220%; background:conic-gradient(from 0deg,transparent 0 76%,rgba(50,239,69,.12) 82%,#32ef45 90%,#c9ffd0 94%,transparent 100%); animation:moving-border 3.4s linear infinite; }
+.project-signals a::before { content:""; position:absolute; z-index:-2; inset:-220%; background:conic-gradient(from 0deg,transparent 0 76%,rgba(221,168,18,.12) 82%,#dda812 90%,#fff1b8 94%,transparent 100%); animation:moving-border 3.4s linear infinite; }
 .project-signals a::after { content:""; position:absolute; z-index:-1; inset:1px; border-radius:12px; background:rgba(4,6,10,.92); }
-.project-signals a:hover,.project-signals a:focus-visible { transform:translateY(-2px); box-shadow:0 12px 35px rgba(50,239,69,.1); outline:none; }
+.project-signals a:hover,.project-signals a:focus-visible { transform:translateY(-2px); box-shadow:0 12px 35px rgba(221,168,18,.12); outline:none; }
 .project-signals strong { font-size:14px; }
 .project-signals > a > :deep(svg) { color:var(--nex4-green); font-size:15px; }
 .signal-status { display:flex; align-items:center; gap:6px; color:var(--nex4-text-muted); font-size:10px; font-weight:700; letter-spacing:.8px; }
-.signal-status i { width:6px; height:6px; border-radius:50%; background:var(--nex4-green); box-shadow:0 0 9px rgba(50,239,69,.75); animation:status-pulse 1.8s ease-in-out infinite; }
+.signal-status i { width:6px; height:6px; border-radius:50%; background:var(--nex4-green); box-shadow:0 0 9px rgba(221,168,18,.75); animation:status-pulse 1.8s ease-in-out infinite; }
 .hero-services { position:absolute; z-index:3; bottom:0; width:100%; overflow:hidden; border-top:1px solid var(--nex4-border); background:rgba(255,255,255,.01); }
 .services-track { display:flex; width:max-content; animation:services-marquee 25s linear infinite; }
 .hero-services:hover .services-track { animation-play-state:paused; }

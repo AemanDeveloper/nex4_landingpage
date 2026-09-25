@@ -47,13 +47,13 @@ import ArrowUpRightIcon from "~/components/ui/ArrowUpRightIcon.vue";
 .team-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:15px; }
 .team-card { overflow:hidden; border:1px solid var(--nex4-border); border-radius:18px; background:rgba(255,255,255,.012); transition:.3s ease; }
 .team-card:hover { transform:translateY(-6px); border-color:var(--nex4-border-green); }
-.team-identity { position:relative; height:330px; display:flex; align-items:center; justify-content:center; overflow:hidden; background:radial-gradient(circle at center,rgba(50,239,69,.08),transparent 50%),#070c08; }
+.team-identity { position:relative; height:330px; display:flex; align-items:center; justify-content:center; overflow:hidden; background:radial-gradient(circle at center,rgba(221,168,18,.1),transparent 50%),#080c17; }
 .identity-grid { position:absolute; inset:0; opacity:.4; background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px); background-size:35px 35px; mask-image:radial-gradient(circle,black,transparent 70%); }
 .initials { position:relative; z-index:2; color:rgba(255,255,255,.1); font-family:"Manrope",sans-serif; font-size:96px; font-weight:800; letter-spacing:-7px; transition:.3s ease; }
-.team-card:hover .initials { color:rgba(50,239,69,.2); transform:scale(1.04); }
+.team-card:hover .initials { color:rgba(221,168,18,.22); transform:scale(1.04); }
 .team-number { position:absolute; top:20px; right:20px; color:var(--nex4-text-muted); font-size:12px; }
 .member-state { position:absolute; bottom:18px; left:18px; display:flex; align-items:center; gap:7px; padding:7px 10px; border:1px solid var(--nex4-border); border-radius:999px; color:var(--nex4-text-muted); font-size:12px; }
-.member-state i { width:5px; height:5px; border-radius:50%; background:var(--nex4-green); box-shadow:0 0 8px rgba(50,239,69,.8); }
+.member-state i { width:5px; height:5px; border-radius:50%; background:var(--nex4-green); box-shadow:0 0 8px rgba(221,168,18,.8); }
 .team-details { min-height:100px; display:flex; align-items:flex-end; justify-content:space-between; gap:20px; padding:22px; }
 .team-details h3 { font-family:"Manrope",sans-serif; font-size:19px; }
 .team-details p { margin-top:3px; color:var(--nex4-green); font-size:13px; }
