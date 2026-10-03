@@ -201,6 +201,8 @@ useSeoMeta({
         Availability only. No login credentials or private system data are stored by
         this dashboard.
       </p>
+
+      <ManagementTrafficAnalytics />
     </main>
   </div>
 </template>

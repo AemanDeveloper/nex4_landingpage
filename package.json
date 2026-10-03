@@ -3,6 +3,8 @@
   "type": "module",
   "private": true,
   "scripts": {
+    "analytics:create-source": "node scripts/create-analytics-source.mjs",
+    "analytics:verify": "node scripts/verify-analytics.mjs",
     "build": "nuxt build",
     "db:migrate": "node scripts/run-management-migrations.mjs",
     "dev": "nuxt dev",

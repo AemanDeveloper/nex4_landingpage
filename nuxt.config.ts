@@ -23,6 +23,16 @@ export default defineNuxtConfig({
         "X-Content-Type-Options": "nosniff",
       },
     },
+    "/api/management/analytics": {
+      headers: {
+        "X-Content-Type-Options": "nosniff",
+      },
+    },
+    "/api/telemetry/traffic": {
+      headers: {
+        "X-Content-Type-Options": "nosniff",
+      },
+    },
   },
 
   runtimeConfig: {

@@ -1,4 +1,4 @@
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 import process from "node:process";
 import postgres from "postgres";
 
@@ -18,16 +18,25 @@ const sql = postgres(databaseUrl, {
 });
 
 try {
-  const migration = readFileSync(
-    new URL("../database/migrations/001_create_management_users.sql", import.meta.url),
-    "utf8",
-  );
-  await sql.unsafe(migration);
+  const migrationsDirectory = new URL("../database/migrations/", import.meta.url);
+  const migrationFiles = readdirSync(migrationsDirectory)
+    .filter((file) => file.endsWith(".sql"))
+    .sort();
+
+  for (const migrationFile of migrationFiles) {
+    const migration = readFileSync(new URL(migrationFile, migrationsDirectory), "utf8");
+    await sql.unsafe(migration);
+    console.log(`Applied ${migrationFile}`);
+  }
+
   const [result] = await sql`
-    select to_regclass('management.users') is not null as ready
+    select
+      to_regclass('management.users') is not null
+      and to_regclass('management.analytics_sources') is not null
+      and to_regclass('management.traffic_events') is not null as ready
   `;
 
-  if (!result?.ready) throw new Error("Management users table was not created.");
+  if (!result?.ready) throw new Error("Management database tables were not created.");
   console.log("Management database migration completed.");
 } finally {
   await sql.end();
