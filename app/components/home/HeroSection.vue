@@ -26,7 +26,7 @@ import NoiseBackgroundButton from "~/components/ui/NoiseBackgroundButton.vue";
           <a href="#work" class="secondary-button">View Our Work</a>
         </div>
 
-        <div class="project-signals" aria-label="Live NEX4 products">
+        <div class="project-signals" aria-label="NEX4 products">
           <a
             href="https://nutritrack.nex4.my"
             target="_blank"
@@ -36,19 +36,39 @@ import NoiseBackgroundButton from "~/components/ui/NoiseBackgroundButton.vue";
               <i />
               LIVE
             </span>
-            <strong>NutriTrack</strong>
+
+            <strong>NEX4 NutriTrack</strong>
+
             <ArrowUpRightIcon />
           </a>
+
           <a
             href="https://crm.nex4.my"
             target="_blank"
             rel="noopener noreferrer"
           >
-            <span class="signal-status signal-status--beta">
+            <span class="signal-status signal-status--trial">
               <i />
-              BETA
+              TRIAL
             </span>
-            <strong>Nex4 CRM</strong>
+
+            <strong>NEX4 CRM</strong>
+
+            <ArrowUpRightIcon />
+          </a>
+
+          <a
+            href="https://lms.nex4.my"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <span class="signal-status signal-status--demo">
+              <i />
+              DEMO
+            </span>
+
+            <strong>NEX4 LMS</strong>
+
             <ArrowUpRightIcon />
           </a>
         </div>
@@ -229,29 +249,57 @@ h1 em {
   margin-top: 34px;
 }
 .project-signals {
-  width: min(100%, 530px);
+  width: min(100%, 720px);
+
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin: 34px auto 0;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+
+  gap: 12px;
+
+  margin: 28px auto 0;
 }
+
 .project-signals a {
   position: relative;
-  isolation: isolate;
-  min-height: 60px;
+  z-index: 0;
+
+  min-width: 0;
+  min-height: 58px;
+
   display: grid;
   grid-template-columns: auto 1fr auto;
   align-items: center;
-  gap: 12px;
+
+  gap: 10px;
+
+  padding: 14px 16px;
+
   overflow: hidden;
-  padding: 10px 14px;
-  border: 1px solid transparent;
-  border-radius: 14px;
-  text-align: left;
-  backdrop-filter: blur(16px);
+
+  border-radius: 12px;
+
+  color: var(--nex4-text);
+
+  background: rgba(4, 6, 10, 0.82);
+
   transition:
-    transform var(--motion-fast) var(--motion-ease),
-    box-shadow var(--motion-fast) var(--motion-ease);
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.project-signals strong {
+  overflow: hidden;
+
+  white-space: nowrap;
+  text-overflow: ellipsis;
+
+  font-size: 12px;
+}
+
+@media (max-width: 700px) {
+  .project-signals {
+    grid-template-columns: 1fr;
+  }
 }
 .project-signals a::before {
   content: "";
@@ -310,9 +358,14 @@ h1 em {
   background: #32ef45;
   box-shadow: 0 0 9px rgba(50, 239, 69, 0.75);
 }
-.signal-status--beta i {
-  background: var(--nex4-gold);
-  box-shadow: 0 0 9px rgba(221, 168, 18, 0.75);
+.signal-status--trial i {
+  background: #e8b51a;
+  box-shadow: 0 0 10px rgba(232, 181, 26, 0.75);
+}
+
+.signal-status--demo i {
+  background: #62a8ff;
+  box-shadow: 0 0 10px rgba(98, 168, 255, 0.75);
 }
 .hero-services {
   position: absolute;

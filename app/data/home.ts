@@ -38,7 +38,7 @@ export const projects = [
   {
     number: "01",
     category: "AI APPLICATION",
-    title: "MyNutriTrack AI",
+    title: "NEX4 NutriTrack AI",
     description:
       "An AI-powered nutrition experience designed to make understanding food and daily nutrition easier and more accessible.",
     tags: ["AI Integration", "Web Application", "Product Design"],
@@ -53,16 +53,37 @@ export const projects = [
   {
     number: "02",
     category: "BUSINESS SYSTEM",
-    title: "Marketing CRM",
+    title: "NEX4 Marketing CRM",
     description:
       "A centralized workspace designed to organize marketing information, workflows and business activities.",
     tags: ["CRM", "Dashboard", "Web Application", "Business Tools"],
     link: "https://crm.nex4.my",
-    linkText: "Open public beta",
-    status: "Public beta",
+    linkText: "Request Trial",
+    status: "Open For Trial",
     domain: "crm.nex4.my",
     preview: "/images/projects/crm-preview.png",
     previewAlt: "Preview of the NEX4 Marketing CRM website",
+  },
+
+  {
+    number: "03",
+    category: "EDUCATION PLATFORM",
+    title: "NEX4 LMS",
+    description:
+      "A learning management system designed to manage courses, students, learning content and progress through one centralized platform.",
+    tags: [
+      "LMS",
+      "Dashboard",
+      "Web Application",
+      "Learning Management",
+      "Education Platform",
+    ],
+    link: "https://lms.nex4.my",
+    linkText: "View Demo",
+    status: "Open for Demo",
+    domain: "lms.nex4.my",
+    preview: "/images/projects/lms-preview.png",
+    previewAlt: "Preview of the NEX4 LMS platform",
   },
 ];
 
