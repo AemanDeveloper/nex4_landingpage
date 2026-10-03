@@ -4,13 +4,17 @@
   "private": true,
   "scripts": {
     "build": "nuxt build",
+    "db:migrate": "node scripts/run-management-migrations.mjs",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
+    "management:create-user": "node scripts/create-management-user.mjs",
+    "management:secrets": "node scripts/generate-management-secrets.mjs",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
     "nuxt": "^4.5.2",
+    "postgres": "3.4.9",
     "vue": "^3.5.42",
     "vue-router": "^5.3.1"
   }

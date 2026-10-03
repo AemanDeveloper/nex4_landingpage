@@ -5,6 +5,31 @@ export default defineNuxtConfig({
 
   css: ["~/assets/css/theme.css", "~/assets/css/main.css"],
 
+  routeRules: {
+    "/management": {
+      headers: {
+        "X-Robots-Tag": "noindex, nofollow",
+        "X-Content-Type-Options": "nosniff",
+      },
+    },
+    "/management/**": {
+      headers: {
+        "X-Robots-Tag": "noindex, nofollow",
+        "X-Content-Type-Options": "nosniff",
+      },
+    },
+    "/api/management/status": {
+      headers: {
+        "X-Content-Type-Options": "nosniff",
+      },
+    },
+  },
+
+  runtimeConfig: {
+    databaseUrl: "",
+    managementSessionSecret: "",
+  },
+
   app: {
     head: {
       htmlAttrs: {
