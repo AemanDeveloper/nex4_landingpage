@@ -6,11 +6,11 @@ definePageMeta({
 });
 
 type SystemStatus = {
-  id: "lms-owner" | "crm";
+  id: "lms-owner" | "crm" | "nutritrack";
   name: string;
   description: string;
   url: string;
-  actionLabel: string;
+  actionLabel: string | null;
   online: boolean;
   httpStatus: number | null;
   responseTimeMs: number | null;
@@ -41,6 +41,14 @@ const dateFormatter = new Intl.DateTimeFormat("en-MY", {
 
 function formatCheckedAt(value: string) {
   return dateFormatter.format(new Date(value));
+}
+
+function systemIcon(id: SystemStatus["id"]) {
+  return {
+    "lms-owner": "LMS",
+    crm: "CRM",
+    nutritrack: "NUTRI",
+  }[id];
 }
 
 async function logout() {
@@ -135,7 +143,7 @@ useSeoMeta({
         >
           <div class="card-heading">
             <div class="system-icon" aria-hidden="true">
-              {{ system.id === "crm" ? "CRM" : "LMS" }}
+              {{ systemIcon(system.id) }}
             </div>
             <div>
               <p>{{ system.description }}</p>
@@ -172,6 +180,7 @@ useSeoMeta({
           </dl>
 
           <a
+            v-if="system.actionLabel"
             class="open-button"
             :href="system.url"
             target="_blank"
@@ -181,6 +190,10 @@ useSeoMeta({
             {{ system.actionLabel }}
             <span aria-hidden="true">↗</span>
           </a>
+          <div v-else class="open-button open-button-disabled">
+            Admin portal coming soon
+            <span aria-hidden="true">—</span>
+          </div>
         </article>
       </section>
 
@@ -429,7 +442,7 @@ h1 {
 
 .systems {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 20px;
   margin-top: 22px;
 }
@@ -559,6 +572,19 @@ h1 {
   transform: translateY(-2px);
   background: var(--nex4-green-bright);
   box-shadow: 0 12px 30px rgba(221, 168, 18, 0.16);
+}
+
+.open-button-disabled {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.035);
+  color: var(--nex4-text-muted);
+  cursor: not-allowed;
+}
+
+.open-button-disabled:hover {
+  transform: none;
+  background: rgba(255, 255, 255, 0.035);
+  box-shadow: none;
 }
 
 .monitor-note {

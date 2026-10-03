@@ -1,9 +1,9 @@
 type ManagedSystem = {
-  id: "lms-owner" | "crm";
+  id: "lms-owner" | "crm" | "nutritrack";
   name: string;
   description: string;
   url: string;
-  actionLabel: string;
+  actionLabel: string | null;
 };
 
 type SystemStatus = ManagedSystem & {
@@ -27,6 +27,13 @@ const systems: ManagedSystem[] = [
     description: "Customer relationship management portal",
     url: "https://crm.nex4.my/login",
     actionLabel: "Open CRM",
+  },
+  {
+    id: "nutritrack",
+    name: "NEX4 NutriTrack",
+    description: "AI-powered nutrition tracking platform",
+    url: "https://nutritrack.nex4.my",
+    actionLabel: null,
   },
 ];
 
