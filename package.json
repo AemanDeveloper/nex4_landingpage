@@ -10,6 +10,7 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "management:create-user": "node scripts/create-management-user.mjs",
+    "management:change-password": "node scripts/change-management-password.mjs",
     "management:secrets": "node scripts/generate-management-secrets.mjs",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare"
