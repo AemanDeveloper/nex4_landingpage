@@ -42,14 +42,13 @@ export default defineEventHandler(async (event) => {
   }
 
   const tokenHash = createHash("sha256").update(token).digest("hex");
-  const sql = useManagementDatabase(event);
-  const sources = await sql<AnalyticsSource[]>`
-    select system_id
-    from management.analytics_sources
-    where secret_hash = ${tokenHash}
-      and is_active = true
-    limit 1
-  `;
+  const sources = await runManagementQuery(event, (sql) => sql<AnalyticsSource[]>`
+      select system_id
+      from management.analytics_sources
+      where secret_hash = ${tokenHash}
+        and is_active = true
+      limit 1
+    `);
   const source = sources[0];
 
   if (!source) {
@@ -100,37 +99,37 @@ export default defineEventHandler(async (event) => {
     ? createHmac("sha256", token).update(body.sessionId as string).digest("hex")
     : null;
 
-  await sql`
-    with inserted as (
-      insert into management.traffic_events (
-        system_id,
-        event_type,
-        path,
-        target_id,
-        device_type,
-        source,
-        visitor_hash,
-        session_hash
-      ) values (
-        ${source.system_id},
-        ${eventType},
-        ${body.path as string},
-        ${targetId},
-        ${deviceType},
-        ${trafficSource},
-        ${visitorHash},
-        ${sessionHash}
+  await runManagementQuery(event, (sql) => sql`
+      with inserted as (
+        insert into management.traffic_events (
+          system_id,
+          event_type,
+          path,
+          target_id,
+          device_type,
+          source,
+          visitor_hash,
+          session_hash
+        ) values (
+          ${source.system_id},
+          ${eventType},
+          ${body.path as string},
+          ${targetId},
+          ${deviceType},
+          ${trafficSource},
+          ${visitorHash},
+          ${sessionHash}
+        )
+        returning system_id, occurred_at
       )
-      returning system_id, occurred_at
-    )
-    update management.analytics_sources source
-    set
-      connected_at = coalesce(source.connected_at, inserted.occurred_at),
-      last_event_at = inserted.occurred_at,
-      updated_at = now()
-    from inserted
-    where source.system_id = inserted.system_id
-  `;
+      update management.analytics_sources source
+      set
+        connected_at = coalesce(source.connected_at, inserted.occurred_at),
+        last_event_at = inserted.occurred_at,
+        updated_at = now()
+      from inserted
+      where source.system_id = inserted.system_id
+    `);
 
   setResponseStatus(event, 202);
   return { accepted: true };

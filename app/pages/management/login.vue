@@ -37,8 +37,10 @@ async function login() {
 
     if (statusCode === 429) {
       errorMessage.value = "Too many attempts. Please try again in 15 minutes.";
-    } else if (statusCode === 503 || !session.value?.configured) {
+    } else if (!session.value?.configured) {
       errorMessage.value = "Management login has not been configured on this server.";
+    } else if (statusCode === 503 || statusCode === 504) {
+      errorMessage.value = "The management database is temporarily unavailable. Please try again.";
     } else {
       errorMessage.value = "Incorrect username or password.";
     }

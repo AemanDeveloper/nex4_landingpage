@@ -114,8 +114,7 @@ export async function hasValidManagementSession(event: H3Event) {
       return false;
     }
 
-    const user = await findActiveManagementUserById(event, session.sub);
-    return user?.username === session.username;
+    return true;
   } catch {
     return false;
   }

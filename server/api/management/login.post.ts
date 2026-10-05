@@ -35,7 +35,10 @@ export default defineEventHandler(async (event) => {
   if (username.length <= 100 && password.length <= 256) {
     try {
       user = await verifyManagementCredentials(event, username, password);
-    } catch {
+    } catch (error) {
+      console.error("[management/login] Credential lookup failed", {
+        error: error instanceof Error ? error.message : String(error),
+      });
       throw createError({
         statusCode: 503,
         statusMessage: "Management database is unavailable",
@@ -57,8 +60,15 @@ export default defineEventHandler(async (event) => {
   }
 
   attempts.delete(clientKey);
-  await recordManagementLogin(event, user.id);
   createManagementSession(event, user);
+
+  try {
+    await recordManagementLogin(event, user.id);
+  } catch (error) {
+    console.warn("[management/login] Unable to record login timestamp", {
+      error: error instanceof Error ? error.message : String(error),
+    });
+  }
 
   return { authenticated: true };
 });

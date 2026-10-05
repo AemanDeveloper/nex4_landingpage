@@ -40,8 +40,9 @@ const systemNames: Record<SystemId, string> = {
 export default defineEventHandler(async (event) => {
   setResponseHeader(event, "Cache-Control", "no-store");
 
-  const sql = useManagementDatabase(event);
-  const [rows, totalRows, interactionRows, deviceRows, sourceRows] = await Promise.all([
+  const [rows, totalRows, interactionRows, deviceRows, sourceRows] = await runManagementQuery(
+    event,
+    (sql) => Promise.all([
     sql<AnalyticsRow[]>`
       with days as (
         select generate_series(
@@ -138,7 +139,8 @@ export default defineEventHandler(async (event) => {
       order by page_views desc, source
       limit 12
     `,
-  ]);
+    ]),
+  );
 
   const totalsBySystem = new Map(
     totalRows.map((row) => [row.system_id, {
