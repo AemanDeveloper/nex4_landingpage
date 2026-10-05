@@ -1,8 +1,6 @@
 import postgres from "postgres";
 import type { H3Event } from "h3";
 
-let database: ReturnType<typeof postgres> | undefined;
-let activeDatabaseUrl = "";
 const defaultQueryTimeoutMs = 8_000;
 
 class ManagementDatabaseTimeoutError extends Error {
@@ -12,16 +10,7 @@ class ManagementDatabaseTimeoutError extends Error {
   }
 }
 
-function discardManagementDatabase(sql: ReturnType<typeof postgres>) {
-  if (database === sql) {
-    database = undefined;
-    activeDatabaseUrl = "";
-  }
-
-  void sql.end({ timeout: 0 }).catch(() => undefined);
-}
-
-export function useManagementDatabase(event: H3Event) {
+function createManagementDatabase(event: H3Event) {
   const config = useRuntimeConfig(event);
   const databaseUrl = config.databaseUrl.trim();
 
@@ -32,19 +21,13 @@ export function useManagementDatabase(event: H3Event) {
     });
   }
 
-  if (!database || activeDatabaseUrl !== databaseUrl) {
-    database = postgres(databaseUrl, {
-      ssl: "require",
-      max: 1,
-      idle_timeout: 10,
-      connect_timeout: 5,
-      max_lifetime: 60,
-      prepare: false,
-    });
-    activeDatabaseUrl = databaseUrl;
-  }
-
-  return database;
+  return postgres(databaseUrl, {
+    ssl: "require",
+    max: 1,
+    idle_timeout: 5,
+    connect_timeout: 5,
+    prepare: false,
+  });
 }
 
 export async function runManagementQuery<T>(
@@ -52,7 +35,9 @@ export async function runManagementQuery<T>(
   query: (sql: ReturnType<typeof postgres>) => PromiseLike<T>,
   timeoutMs = defaultQueryTimeoutMs,
 ) {
-  const sql = useManagementDatabase(event);
+  // A request-scoped client prevents one timed-out serverless invocation from
+  // destroying a connection that another concurrent invocation is still using.
+  const sql = createManagementDatabase(event);
   let timeout: ReturnType<typeof setTimeout> | undefined;
 
   try {
@@ -66,10 +51,10 @@ export async function runManagementQuery<T>(
       }),
     ]);
   } catch (error) {
-    discardManagementDatabase(sql);
     throw error;
   } finally {
     if (timeout) clearTimeout(timeout);
+    await sql.end({ timeout: 0 }).catch(() => undefined);
   }
 }
 
