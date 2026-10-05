@@ -24,6 +24,24 @@ try {
       to_regclass('management.traffic_events') is not null as events_table,
       to_regclass('management.traffic_events_system_occurred_idx') is not null
         as events_index,
+      to_regclass('management.traffic_events_system_type_occurred_idx') is not null
+        as event_type_index,
+      to_regclass('management.traffic_events_system_target_occurred_idx') is not null
+        as event_target_index,
+      exists (
+        select 1
+        from information_schema.columns
+        where table_schema = 'management'
+          and table_name = 'traffic_events'
+          and column_name = 'device_type'
+      ) as device_dimension,
+      exists (
+        select 1
+        from information_schema.columns
+        where table_schema = 'management'
+          and table_name = 'traffic_events'
+          and column_name = 'source'
+      ) as source_dimension,
       (
         select relrowsecurity and relforcerowsecurity
         from pg_class
@@ -38,7 +56,7 @@ try {
         as sources_private,
       not has_table_privilege('anon', 'management.traffic_events', 'select')
         as events_private,
-      (select count(*) from management.analytics_sources) = 3 as three_sources
+      (select count(*) from management.analytics_sources) = 4 as four_sources
   `;
 
   const passed = Object.values(result).every(Boolean);

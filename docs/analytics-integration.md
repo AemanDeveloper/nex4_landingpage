@@ -1,7 +1,12 @@
 # NEX4 traffic analytics integration
 
-The management dashboard accepts privacy-minimised page-view events from the
-LMS Owner, CRM, and NutriTrack projects. Each project receives a separate token.
+The management dashboard accepts privacy-minimised events from the NEX4 landing
+page, LMS Owner, CRM, and NutriTrack projects. Each source receives a separate
+server-only token.
+
+The landing page records page views, section impressions, button/link clicks,
+device category, and a short traffic-source label. It never stores an IP address,
+full referrer URL, credential, or personal profile data.
 
 ## 1. Create a source token
 
@@ -11,6 +16,7 @@ Run this in the NEX4 landing-page project with `NUXT_DATABASE_URL` configured:
 npm run analytics:create-source -- lms-owner
 npm run analytics:create-source -- crm
 npm run analytics:create-source -- nutritrack
+npm run analytics:create-source -- landing
 ```
 
 Save each generated token in the matching application project as a server-only

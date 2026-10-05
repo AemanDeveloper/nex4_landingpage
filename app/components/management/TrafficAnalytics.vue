@@ -9,7 +9,7 @@ type DailyTraffic = {
 };
 
 type TrafficSystem = {
-  id: "lms-owner" | "crm" | "nutritrack";
+  id: "landing" | "lms-owner" | "crm" | "nutritrack";
   name: string;
   connected: boolean;
   lastEventAt: string | null;
@@ -21,10 +21,28 @@ type TrafficSystem = {
   daily: DailyTraffic[];
 };
 
+type InteractionMetric = {
+  id: string;
+  views: number;
+  uniqueVisitors: number;
+};
+
+type DimensionMetric = {
+  id: string;
+  pageViews: number;
+  uniqueVisitors: number;
+};
+
 type AnalyticsResponse = {
   rangeDays: number;
   generatedAt: string;
   systems: TrafficSystem[];
+  landing: {
+    sections: InteractionMetric[];
+    buttons: InteractionMetric[];
+    devices: DimensionMetric[];
+    sources: DimensionMetric[];
+  };
 };
 
 const { data, error, status, refresh } = await useFetch<AnalyticsResponse>(
@@ -33,6 +51,7 @@ const { data, error, status, refresh } = await useFetch<AnalyticsResponse>(
 );
 
 const systems = computed(() => data.value?.systems ?? []);
+const landing = computed(() => data.value?.landing);
 const numberFormatter = new Intl.NumberFormat("en-MY", { notation: "compact" });
 const dayFormatter = new Intl.DateTimeFormat("en-MY", {
   weekday: "short",
@@ -46,6 +65,21 @@ function barHeight(system: TrafficSystem, value: number) {
 
 function formatDay(value: string) {
   return dayFormatter.format(new Date(`${value}T12:00:00+08:00`));
+}
+
+function formatLabel(value: string) {
+  const deviceLabels: Record<string, string> = {
+    desktop: "Desktop / web",
+    tablet: "Tablet",
+    mobile: "Mobile",
+    unknown: "Unknown",
+    direct: "Direct",
+    internal: "Internal",
+    referral: "Referral",
+  };
+  if (deviceLabels[value]) return deviceLabels[value];
+  if (value.startsWith("utm:")) return `Campaign · ${value.slice(4)}`;
+  return value.replaceAll(":", " · ").replaceAll("-", " ");
 }
 
 let refreshTimer: ReturnType<typeof setInterval> | undefined;
@@ -105,22 +139,79 @@ onBeforeUnmount(() => clearInterval(refreshTimer));
         </div>
       </article>
     </div>
+
+    <div v-if="landing" class="landing-detail">
+      <div class="detail-heading">
+        <div>
+          <p class="traffic-eyebrow">NEX4 landing engagement</p>
+          <h3>Sections, actions and audience</h3>
+        </div>
+        <span>Counts reset with the 7-day reporting window</span>
+      </div>
+
+      <div class="detail-grid">
+        <article class="detail-card">
+          <h4>Section views</h4>
+          <p class="detail-caption">Seen at least 30% in the viewport</p>
+          <ol v-if="landing.sections.length" class="metric-list">
+            <li v-for="item in landing.sections" :key="item.id">
+              <span>{{ formatLabel(item.id) }}</span>
+              <strong>{{ numberFormatter.format(item.views) }}</strong>
+            </li>
+          </ol>
+          <p v-else class="empty-metric">Waiting for section views</p>
+        </article>
+
+        <article class="detail-card">
+          <h4>Button and link clicks</h4>
+          <p class="detail-caption">Grouped by page area and label</p>
+          <ol v-if="landing.buttons.length" class="metric-list">
+            <li v-for="item in landing.buttons" :key="item.id">
+              <span>{{ formatLabel(item.id) }}</span>
+              <strong>{{ numberFormatter.format(item.views) }}</strong>
+            </li>
+          </ol>
+          <p v-else class="empty-metric">Waiting for interactions</p>
+        </article>
+
+        <article class="detail-card">
+          <h4>Device usage</h4>
+          <p class="detail-caption">Landing page views by viewport</p>
+          <ol v-if="landing.devices.length" class="metric-list">
+            <li v-for="item in landing.devices" :key="item.id">
+              <span>{{ formatLabel(item.id) }}</span>
+              <strong>{{ numberFormatter.format(item.pageViews) }}</strong>
+            </li>
+          </ol>
+          <p v-else class="empty-metric">Waiting for page views</p>
+        </article>
+
+        <article class="detail-card">
+          <h4>Traffic source</h4>
+          <p class="detail-caption">UTM source, referrer host or direct</p>
+          <ol v-if="landing.sources.length" class="metric-list">
+            <li v-for="item in landing.sources" :key="item.id">
+              <span>{{ formatLabel(item.id) }}</span>
+              <strong>{{ numberFormatter.format(item.pageViews) }}</strong>
+            </li>
+          </ol>
+          <p v-else class="empty-metric">Waiting for page views</p>
+        </article>
+      </div>
+    </div>
   </section>
 </template>
 
 <style scoped>
-.traffic-section {
-  margin-top: 72px;
-}
-
-.traffic-heading {
+.traffic-section { margin-top: 72px; }
+.traffic-heading,
+.detail-heading {
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
   gap: 20px;
   margin-bottom: 22px;
 }
-
 .traffic-eyebrow {
   margin-bottom: 6px;
   color: var(--nex4-green-bright);
@@ -129,43 +220,42 @@ onBeforeUnmount(() => clearInterval(refreshTimer));
   letter-spacing: 1.4px;
   text-transform: uppercase;
 }
-
 .traffic-heading h2 {
   font-family: "Manrope", sans-serif;
   font-size: 30px;
   letter-spacing: -1px;
 }
-
-.privacy-note {
+.privacy-note,
+.detail-heading > span,
+.detail-caption,
+.empty-metric {
   color: var(--nex4-text-muted);
   font-size: 11px;
 }
-
 .traffic-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 20px;
 }
-
-.traffic-card {
+.traffic-card,
+.detail-card {
   padding: 24px;
   border: 1px solid rgba(255, 255, 255, 0.09);
   border-radius: 18px;
   background: rgba(9, 14, 24, 0.78);
 }
-
 .traffic-card header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
 }
-
-.traffic-card h3 {
+.traffic-card h3,
+.detail-heading h3 {
   font-family: "Manrope", sans-serif;
   font-size: 16px;
 }
-
+.detail-heading h3 { font-size: 24px; }
 .traffic-card header span {
   display: inline-flex;
   align-items: center;
@@ -173,44 +263,34 @@ onBeforeUnmount(() => clearInterval(refreshTimer));
   font-size: 10px;
   font-weight: 700;
 }
-
 .traffic-card header i {
   width: 6px;
   height: 6px;
   border-radius: 50%;
 }
-
 .connected { color: #6ee7b7; }
 .connected i { background: #34d399; }
 .awaiting { color: #fbbf24; }
 .awaiting i { background: #f59e0b; }
-
 .traffic-totals {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 10px;
   margin: 24px 0 28px;
 }
-
-.traffic-totals dt {
-  color: var(--nex4-text-muted);
-  font-size: 10px;
-}
-
+.traffic-totals dt { color: var(--nex4-text-muted); font-size: 10px; }
 .traffic-totals dd {
   margin-top: 5px;
   font-family: "Manrope", sans-serif;
   font-size: 20px;
   font-weight: 750;
 }
-
 .traffic-chart {
   height: 118px;
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   gap: 8px;
 }
-
 .bar-column {
   min-width: 0;
   display: grid;
@@ -218,7 +298,6 @@ onBeforeUnmount(() => clearInterval(refreshTimer));
   gap: 5px;
   text-align: center;
 }
-
 .bar-value,
 .bar-day {
   overflow: hidden;
@@ -226,14 +305,12 @@ onBeforeUnmount(() => clearInterval(refreshTimer));
   font-size: 9px;
   text-overflow: ellipsis;
 }
-
 .bar-track {
   position: relative;
   overflow: hidden;
   border-radius: 5px;
   background: rgba(255, 255, 255, 0.035);
 }
-
 .bar-track i {
   position: absolute;
   right: 0;
@@ -243,7 +320,43 @@ onBeforeUnmount(() => clearInterval(refreshTimer));
   background: linear-gradient(to top, var(--nex4-green), var(--nex4-green-bright));
   opacity: 0.85;
 }
-
+.landing-detail { margin-top: 34px; }
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+.detail-card h4 { font-family: "Manrope", sans-serif; font-size: 15px; }
+.detail-caption { margin-top: 5px; }
+.metric-list {
+  display: grid;
+  gap: 8px;
+  margin-top: 18px;
+  list-style: none;
+}
+.metric-list li {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.055);
+}
+.metric-list li:last-child { padding-bottom: 0; border-bottom: 0; }
+.metric-list span {
+  overflow: hidden;
+  color: var(--nex4-text-secondary);
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.metric-list strong {
+  color: var(--nex4-green-bright);
+  font-family: "Manrope", sans-serif;
+  font-size: 13px;
+}
+.empty-metric { margin-top: 20px; }
 .analytics-error {
   margin-bottom: 16px;
   padding: 14px 18px;
@@ -252,13 +365,14 @@ onBeforeUnmount(() => clearInterval(refreshTimer));
   color: #fca5a5;
   font-size: 12px;
 }
-
 @media (max-width: 1000px) {
-  .traffic-grid { grid-template-columns: 1fr; }
+  .traffic-grid,
+  .detail-grid { grid-template-columns: 1fr; }
 }
-
 @media (max-width: 650px) {
-  .traffic-heading { align-items: flex-start; flex-direction: column; }
-  .traffic-card { padding: 20px; }
+  .traffic-heading,
+  .detail-heading { align-items: flex-start; flex-direction: column; }
+  .traffic-card,
+  .detail-card { padding: 20px; }
 }
 </style>

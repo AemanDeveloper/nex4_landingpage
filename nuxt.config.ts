@@ -33,11 +33,17 @@ export default defineNuxtConfig({
         "X-Content-Type-Options": "nosniff",
       },
     },
+    "/api/telemetry/landing": {
+      headers: {
+        "X-Content-Type-Options": "nosniff",
+      },
+    },
   },
 
   runtimeConfig: {
     databaseUrl: "",
     managementSessionSecret: "",
+    landingAnalyticsToken: "",
   },
 
   app: {

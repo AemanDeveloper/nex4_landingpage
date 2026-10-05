@@ -1,17 +1,24 @@
 import { createHash, createHmac } from "node:crypto";
 
 type TrafficPayload = {
+  eventType?: unknown;
   path?: unknown;
+  targetId?: unknown;
+  deviceType?: unknown;
+  source?: unknown;
   visitorId?: unknown;
   sessionId?: unknown;
 };
 
 type AnalyticsSource = {
-  system_id: "lms-owner" | "crm" | "nutritrack";
+  system_id: "landing" | "lms-owner" | "crm" | "nutritrack";
 };
 
 const eventWindows = new Map<string, { count: number; resetsAt: number }>();
 const maxEventsPerMinute = 300;
+const eventTypes = new Set(["page_view", "section_view", "button_click"]);
+const deviceTypes = new Set(["desktop", "tablet", "mobile", "unknown"]);
+const labelPattern = /^[a-z0-9][a-z0-9._:/-]{0,119}$/;
 
 function validText(value: unknown, maxLength: number) {
   return typeof value === "string" && value.length > 0 && value.length <= maxLength;
@@ -61,13 +68,23 @@ export default defineEventHandler(async (event) => {
   }
 
   const body = await readBody<TrafficPayload>(event);
+  const eventType = typeof body.eventType === "string" ? body.eventType : "page_view";
+  const targetId = typeof body.targetId === "string" ? body.targetId : null;
+  const deviceType = typeof body.deviceType === "string" ? body.deviceType : "unknown";
+  const trafficSource = typeof body.source === "string" ? body.source : "unknown";
   if (
-    !validText(body.path, 500)
+    !eventTypes.has(eventType)
+    || !validText(body.path, 500)
     || !(body.path as string).startsWith("/")
+    || (body.path as string).startsWith("//")
     || (body.path as string).includes("?")
     || (body.path as string).includes("#")
+    || !deviceTypes.has(deviceType)
+    || !labelPattern.test(trafficSource)
+    || (eventType === "page_view" && targetId !== null)
+    || (eventType !== "page_view" && (!targetId || !labelPattern.test(targetId)))
   ) {
-    throw createError({ statusCode: 400, statusMessage: "Invalid path" });
+    throw createError({ statusCode: 400, statusMessage: "Invalid telemetry event" });
   }
   if (!validText(body.visitorId, 200)) {
     throw createError({ statusCode: 400, statusMessage: "Invalid visitor ID" });
@@ -87,12 +104,20 @@ export default defineEventHandler(async (event) => {
     with inserted as (
       insert into management.traffic_events (
         system_id,
+        event_type,
         path,
+        target_id,
+        device_type,
+        source,
         visitor_hash,
         session_hash
       ) values (
         ${source.system_id},
+        ${eventType},
         ${body.path as string},
+        ${targetId},
+        ${deviceType},
+        ${trafficSource},
         ${visitorHash},
         ${sessionHash}
       )
