@@ -1,7 +1,7 @@
 # NEX4 traffic analytics integration
 
 The management dashboard accepts privacy-minimised events from the NEX4 landing
-page, LMS Owner, CRM, and NutriTrack projects. Each source receives a separate
+page, user-facing LMS, CRM, and NutriTrack projects. Each source receives a separate
 server-only token.
 
 The landing page records page views, section impressions, button/link clicks,
@@ -47,6 +47,10 @@ await $fetch(process.env.NEX4_ANALYTICS_ENDPOINT!, {
   },
 });
 ```
+
+For the LMS, forward user-facing routes with `source: "lms-user"`. The management
+dashboard intentionally ignores Owner Console events. Owner Console must not mount
+the browser tracker or forward telemetry.
 
 Only the path and HMAC-hashed anonymous identifiers are stored centrally. Do not
 send names, email addresses, IP addresses, full referrer URLs, or credentials.

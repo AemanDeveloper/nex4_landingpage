@@ -22,9 +22,13 @@ type StatusResponse = {
   systems: SystemStatus[];
 };
 
-const { data, error, status, refresh } = await useFetch<StatusResponse>(
+const { data, error, status, refresh } = useFetch<StatusResponse>(
   "/api/management/status",
-  { cache: "no-store" },
+  {
+    cache: "no-store",
+    lazy: true,
+    server: false,
+  },
 );
 
 const systems = computed(() => data.value?.systems ?? []);

@@ -32,7 +32,7 @@ type DimensionRow = {
 const systemIds = ["landing", "lms-owner", "crm", "nutritrack"] as const;
 const systemNames: Record<SystemId, string> = {
   landing: "NEX4 Landing",
-  "lms-owner": "LMS Owner",
+  "lms-owner": "NEX4 LMS",
   crm: "NEX4 CRM",
   nutritrack: "NEX4 NutriTrack",
 };
@@ -40,7 +40,7 @@ const systemNames: Record<SystemId, string> = {
 export default defineEventHandler(async (event) => {
   setResponseHeader(event, "Cache-Control", "no-store");
 
-  const [rows, totalRows, interactionRows, deviceRows, sourceRows] = await runManagementQuery(
+  const [rows, totalRows, interactionRows, deviceRows, sourceRows, lmsPageRows] = await runManagementQuery(
     event,
     (sql) => Promise.all([
     sql<AnalyticsRow[]>`
@@ -57,18 +57,19 @@ export default defineEventHandler(async (event) => {
         count(traffic.id)::int as page_views,
         count(distinct traffic.visitor_hash)::int as unique_visitors,
         count(distinct traffic.session_hash)::int as sessions,
-        source.last_event_at
+        max(traffic.occurred_at)::text as last_event_at
       from management.analytics_sources source
       cross join days
       left join management.traffic_events traffic
         on traffic.system_id = source.system_id
         and traffic.event_type = 'page_view'
+        and (source.system_id <> 'lms-owner' or traffic.source = 'lms-user')
         and traffic.occurred_at >= (days.day::timestamp at time zone 'Asia/Kuala_Lumpur')
         and traffic.occurred_at < (
           (days.day + 1)::timestamp at time zone 'Asia/Kuala_Lumpur'
         )
       where source.is_active = true
-      group by source.system_id, source.last_event_at, days.day
+      group by source.system_id, days.day
       order by source.system_id, days.day
     `,
     sql<AnalyticsTotalRow[]>`
@@ -81,6 +82,7 @@ export default defineEventHandler(async (event) => {
       left join management.traffic_events traffic
         on traffic.system_id = source.system_id
         and traffic.event_type = 'page_view'
+        and (source.system_id <> 'lms-owner' or traffic.source = 'lms-user')
         and traffic.occurred_at >= (
           (
             (now() at time zone 'Asia/Kuala_Lumpur')::date - interval '6 days'
@@ -137,6 +139,24 @@ export default defineEventHandler(async (event) => {
         )
       group by source
       order by page_views desc, source
+      limit 12
+    `,
+    sql<DimensionRow[]>`
+      select
+        path as dimension,
+        count(*)::int as page_views,
+        count(distinct visitor_hash)::int as unique_visitors
+      from management.traffic_events
+      where system_id = 'lms-owner'
+        and event_type = 'page_view'
+        and source = 'lms-user'
+        and occurred_at >= (
+          (
+            (now() at time zone 'Asia/Kuala_Lumpur')::date - interval '6 days'
+          )::timestamp at time zone 'Asia/Kuala_Lumpur'
+        )
+      group by path
+      order by page_views desc, path
       limit 12
     `,
     ]),
@@ -199,6 +219,13 @@ export default defineEventHandler(async (event) => {
         uniqueVisitors: Number(row.unique_visitors),
       })),
       sources: sourceRows.map((row) => ({
+        id: row.dimension,
+        pageViews: Number(row.page_views),
+        uniqueVisitors: Number(row.unique_visitors),
+      })),
+    },
+    lms: {
+      pages: lmsPageRows.map((row) => ({
         id: row.dimension,
         pageViews: Number(row.page_views),
         uniqueVisitors: Number(row.unique_visitors),

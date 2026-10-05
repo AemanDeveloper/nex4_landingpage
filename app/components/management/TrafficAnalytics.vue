@@ -43,15 +43,23 @@ type AnalyticsResponse = {
     devices: DimensionMetric[];
     sources: DimensionMetric[];
   };
+  lms: {
+    pages: DimensionMetric[];
+  };
 };
 
-const { data, error, status, refresh } = await useFetch<AnalyticsResponse>(
+const { data, error, status, refresh } = useFetch<AnalyticsResponse>(
   "/api/management/analytics",
-  { cache: "no-store" },
+  {
+    cache: "no-store",
+    lazy: true,
+    server: false,
+  },
 );
 
 const systems = computed(() => data.value?.systems ?? []);
 const landing = computed(() => data.value?.landing);
+const lms = computed(() => data.value?.lms);
 const numberFormatter = new Intl.NumberFormat("en-MY", { notation: "compact" });
 const dayFormatter = new Intl.DateTimeFormat("en-MY", {
   weekday: "short",
@@ -199,6 +207,30 @@ onBeforeUnmount(() => clearInterval(refreshTimer));
         </article>
       </div>
     </div>
+
+    <div v-if="lms" class="landing-detail">
+      <div class="detail-heading">
+        <div>
+          <p class="traffic-eyebrow">LMS user behaviour</p>
+          <h3>User pages only</h3>
+        </div>
+        <span>Owner Console activity is excluded</span>
+      </div>
+
+      <div class="detail-grid lms-detail-grid">
+        <article class="detail-card">
+          <h4>Most viewed LMS pages</h4>
+          <p class="detail-caption">All user-facing routes, grouped by page path</p>
+          <ol v-if="lms.pages.length" class="metric-list">
+            <li v-for="item in lms.pages" :key="item.id">
+              <span>{{ item.id }}</span>
+              <strong>{{ numberFormatter.format(item.pageViews) }}</strong>
+            </li>
+          </ol>
+          <p v-else class="empty-metric">Waiting for new LMS user activity</p>
+        </article>
+      </div>
+    </div>
   </section>
 </template>
 
@@ -326,6 +358,7 @@ onBeforeUnmount(() => clearInterval(refreshTimer));
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 20px;
 }
+.lms-detail-grid { grid-template-columns: minmax(0, 1fr); }
 .detail-card h4 { font-family: "Manrope", sans-serif; font-size: 15px; }
 .detail-caption { margin-top: 5px; }
 .metric-list {
