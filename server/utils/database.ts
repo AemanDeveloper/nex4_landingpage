@@ -1,7 +1,7 @@
 import postgres from "postgres";
 import type { H3Event } from "h3";
 
-const defaultQueryTimeoutMs = 8_000;
+const defaultQueryTimeoutMs = 15_000;
 
 class ManagementDatabaseTimeoutError extends Error {
   constructor(timeoutMs: number) {
@@ -23,7 +23,7 @@ function createManagementDatabase(event: H3Event) {
 
   return postgres(databaseUrl, {
     ssl: "require",
-    max: 1,
+    max: 5,
     idle_timeout: 5,
     connect_timeout: 5,
     prepare: false,
