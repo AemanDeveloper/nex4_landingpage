@@ -32,8 +32,8 @@ const systems: ManagedSystem[] = [
     id: "nutritrack",
     name: "NEX4 NutriTrack",
     description: "AI-powered nutrition tracking platform",
-    url: "https://nutritrack.nex4.my",
-    actionLabel: null,
+    url: "https://nutritrack.nex4.my/owner",
+    actionLabel: "Open NutriTrack Owner",
   },
 ];
 
@@ -78,16 +78,19 @@ async function checkSystem(system: ManagedSystem): Promise<SystemStatus> {
   }
 }
 
-export default defineCachedEventHandler(async (event) => {
-  setResponseHeader(event, "Cache-Control", "no-store");
+export default defineCachedEventHandler(
+  async (event) => {
+    setResponseHeader(event, "Cache-Control", "no-store");
 
-  const results = await Promise.all(systems.map(checkSystem));
+    const results = await Promise.all(systems.map(checkSystem));
 
-  return {
-    checkedAt: new Date().toISOString(),
-    systems: results,
-  };
-}, {
-  maxAge: 30,
-  swr: false,
-});
+    return {
+      checkedAt: new Date().toISOString(),
+      systems: results,
+    };
+  },
+  {
+    maxAge: 30,
+    swr: false,
+  },
+);

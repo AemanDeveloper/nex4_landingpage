@@ -103,7 +103,8 @@ useSeoMeta({
           <h1 id="management-title">Systems overview</h1>
           <p class="intro">
             Live availability checks for NEX4 management platforms. Checks run
-            securely from the NEX4 server and refresh automatically every minute.
+            securely from the NEX4 server and refresh automatically every
+            minute.
           </p>
         </div>
 
@@ -111,7 +112,7 @@ useSeoMeta({
           class="refresh-button"
           type="button"
           :disabled="isRefreshing"
-          @click="refresh"
+          @click="refresh()"
         >
           <span :class="{ spinning: isRefreshing }">↻</span>
           {{ isRefreshing ? "Checking…" : "Refresh status" }}
@@ -130,21 +131,20 @@ useSeoMeta({
         <div>
           <span>Last refresh</span>
           <strong class="summary-time">
-            {{ data?.checkedAt ? formatCheckedAt(data.checkedAt) : "Checking…" }}
+            {{
+              data?.checkedAt ? formatCheckedAt(data.checkedAt) : "Checking…"
+            }}
           </strong>
         </div>
       </section>
 
       <div v-if="error" class="error-banner" role="alert">
-        Status data is temporarily unavailable. Please try refreshing the dashboard.
+        Status data is temporarily unavailable. Please try refreshing the
+        dashboard.
       </div>
 
       <section class="systems" aria-label="Managed systems">
-        <article
-          v-for="system in systems"
-          :key="system.id"
-          class="system-card"
-        >
+        <article v-for="system in systems" :key="system.id" class="system-card">
           <div class="card-heading">
             <div class="system-icon" aria-hidden="true">
               {{ systemIcon(system.id) }}
@@ -202,8 +202,8 @@ useSeoMeta({
       </section>
 
       <p class="monitor-note">
-        Availability only. No login credentials or private system data are stored by
-        this dashboard.
+        Availability only. No login credentials or private system data are
+        stored by this dashboard.
       </p>
 
       <ManagementTrafficAnalytics />
@@ -460,9 +460,15 @@ h1 {
   border: 1px solid rgba(255, 255, 255, 0.09);
   border-radius: 20px;
   background:
-    radial-gradient(circle at 100% 0, rgba(221, 168, 18, 0.07), transparent 34%),
+    radial-gradient(
+      circle at 100% 0,
+      rgba(221, 168, 18, 0.07),
+      transparent 34%
+    ),
     linear-gradient(145deg, rgba(18, 26, 43, 0.82), rgba(7, 10, 18, 0.88));
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.22), inset 0 1px rgba(255, 255, 255, 0.045);
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.22),
+    inset 0 1px rgba(255, 255, 255, 0.045);
 }
 
 .card-heading {
@@ -601,28 +607,69 @@ h1 {
 }
 
 @keyframes spin {
-  to { transform: rotate(1turn); }
+  to {
+    transform: rotate(1turn);
+  }
 }
 
 @media (max-width: 900px) {
-  .systems { grid-template-columns: 1fr; }
-  .overview { align-items: flex-start; flex-direction: column; gap: 28px; }
+  .systems {
+    grid-template-columns: 1fr;
+  }
+  .overview {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 28px;
+  }
 }
 
 @media (max-width: 650px) {
-  .area-label { display: none; }
-  .management-main { padding-top: 62px; }
-  h1 { font-size: 48px; letter-spacing: -3px; }
-  .refresh-button { width: 100%; }
-  .summary { grid-template-columns: 1fr 1fr; }
-  .summary > div { min-height: 96px; padding: 20px; }
-  .summary > div:nth-child(2) { border-right: 0; }
-  .summary > div:last-child { grid-column: 1 / -1; border-top: 1px solid var(--nex4-border); }
-  .system-card { padding: 21px; }
-  .card-heading { grid-template-columns: auto 1fr; }
-  .status-badge { grid-column: 1 / -1; width: max-content; }
-  .metrics { grid-template-columns: 1fr; }
-  .metrics > div { padding: 14px 0; border-bottom: 1px solid var(--nex4-border); }
-  .metrics > div:last-child { border-bottom: 0; }
+  .area-label {
+    display: none;
+  }
+  .management-main {
+    padding-top: 62px;
+  }
+  h1 {
+    font-size: 48px;
+    letter-spacing: -3px;
+  }
+  .refresh-button {
+    width: 100%;
+  }
+  .summary {
+    grid-template-columns: 1fr 1fr;
+  }
+  .summary > div {
+    min-height: 96px;
+    padding: 20px;
+  }
+  .summary > div:nth-child(2) {
+    border-right: 0;
+  }
+  .summary > div:last-child {
+    grid-column: 1 / -1;
+    border-top: 1px solid var(--nex4-border);
+  }
+  .system-card {
+    padding: 21px;
+  }
+  .card-heading {
+    grid-template-columns: auto 1fr;
+  }
+  .status-badge {
+    grid-column: 1 / -1;
+    width: max-content;
+  }
+  .metrics {
+    grid-template-columns: 1fr;
+  }
+  .metrics > div {
+    padding: 14px 0;
+    border-bottom: 1px solid var(--nex4-border);
+  }
+  .metrics > div:last-child {
+    border-bottom: 0;
+  }
 }
 </style>
