@@ -190,10 +190,15 @@ onBeforeUnmount(() => clearInterval(refreshTimer));
       <article v-for="system in systems" :key="system.id" class="traffic-card">
         <header>
           <h3>{{ system.name }}</h3>
-          <span :class="system.connected ? 'connected' : 'awaiting'">
-            <i />
-            {{ system.connected ? "Connected" : "Awaiting connection" }}
-          </span>
+          <div class="card-actions">
+            <span :class="system.connected ? 'connected' : 'awaiting'">
+              <i />
+              {{ system.connected ? "Connected" : "Awaiting connection" }}
+            </span>
+            <NuxtLink :to="`/management/analytics/${system.id}`" class="details-link">
+              View details →
+            </NuxtLink>
+          </div>
         </header>
 
         <dl class="traffic-totals">
@@ -458,6 +463,14 @@ onBeforeUnmount(() => clearInterval(refreshTimer));
   font-size: 20px;
   font-weight: 750;
 }
+.card-actions { display: flex; align-items: flex-end; flex-direction: column; gap: 7px; }
+.details-link {
+  color: var(--nex4-green-bright);
+  font-size: 9px;
+  font-weight: 750;
+  letter-spacing: .3px;
+}
+.details-link:hover { color: var(--nex4-text); }
 .visitor-breakdown {
   margin: -8px 0 26px;
   padding: 14px 16px;

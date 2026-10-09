@@ -76,6 +76,18 @@ function interactionTarget(element: HTMLAnchorElement | HTMLButtonElement) {
   return `${scope}:${kind}:${normalizeLabel(label, "unnamed")}`.slice(0, 120);
 }
 
+function interactionDestination(element: HTMLAnchorElement | HTMLButtonElement) {
+  if (!(element instanceof HTMLAnchorElement) || !element.href) return undefined;
+
+  try {
+    const url = new URL(element.href, location.origin);
+    if (url.origin === location.origin) return url.pathname;
+    return `external:${url.hostname.replace(/^www\./, "").toLowerCase()}`;
+  } catch {
+    return undefined;
+  }
+}
+
 export default defineNuxtPlugin((nuxtApp) => {
   const route = useRoute();
   if (route.path !== "/") return;
@@ -85,7 +97,7 @@ export default defineNuxtPlugin((nuxtApp) => {
   const source = trafficSource();
   const seenSections = new Set<string>();
 
-  function send(eventType: EventType, targetId?: string) {
+  function send(eventType: EventType, targetId?: string, destination?: string) {
     void fetch("/api/telemetry/landing", {
       method: "POST",
       headers: { "content-type": "application/json" },
@@ -93,6 +105,7 @@ export default defineNuxtPlugin((nuxtApp) => {
         eventType,
         path: route.path,
         targetId,
+        destination,
         deviceType: deviceType(),
         source,
         visitorId,
@@ -124,7 +137,7 @@ export default defineNuxtPlugin((nuxtApp) => {
     if (!(target instanceof Element)) return;
     const control = target.closest<HTMLAnchorElement | HTMLButtonElement>("a, button");
     if (!control) return;
-    send("button_click", interactionTarget(control));
+    send("button_click", interactionTarget(control), interactionDestination(control));
   }
 
   nuxtApp.hook("app:mounted", () => {

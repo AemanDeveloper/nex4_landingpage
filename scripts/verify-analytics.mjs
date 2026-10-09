@@ -22,6 +22,7 @@ try {
     select
       to_regclass('management.analytics_sources') is not null as sources_table,
       to_regclass('management.traffic_events') is not null as events_table,
+      to_regclass('management.analytics_visitors') is not null as visitors_table,
       to_regclass('management.traffic_events_system_occurred_idx') is not null
         as events_index,
       to_regclass('management.traffic_events_system_type_occurred_idx') is not null

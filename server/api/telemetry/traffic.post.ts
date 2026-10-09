@@ -4,6 +4,7 @@ type TrafficPayload = {
   eventType?: unknown;
   path?: unknown;
   targetId?: unknown;
+  destination?: unknown;
   deviceType?: unknown;
   source?: unknown;
   visitorId?: unknown;
@@ -19,6 +20,7 @@ const maxEventsPerMinute = 300;
 const eventTypes = new Set(["page_view", "section_view", "button_click"]);
 const deviceTypes = new Set(["desktop", "tablet", "mobile", "unknown"]);
 const labelPattern = /^[a-z0-9][a-z0-9._:/-]{0,119}$/;
+const externalDestinationPattern = /^external:[a-z0-9.-]{1,253}$/;
 
 function validText(value: unknown, maxLength: number) {
   return typeof value === "string" && value.length > 0 && value.length <= maxLength;
@@ -69,6 +71,7 @@ export default defineEventHandler(async (event) => {
   const body = await readBody<TrafficPayload>(event);
   const eventType = typeof body.eventType === "string" ? body.eventType : "page_view";
   const targetId = typeof body.targetId === "string" ? body.targetId : null;
+  const destination = typeof body.destination === "string" ? body.destination : null;
   const deviceType = typeof body.deviceType === "string" ? body.deviceType : "unknown";
   const trafficSource = typeof body.source === "string" ? body.source : "unknown";
   if (
@@ -82,6 +85,20 @@ export default defineEventHandler(async (event) => {
     || !labelPattern.test(trafficSource)
     || (eventType === "page_view" && targetId !== null)
     || (eventType !== "page_view" && (!targetId || !labelPattern.test(targetId)))
+    || (
+      destination !== null
+      && !(
+        (
+          destination.startsWith("/")
+          && !destination.startsWith("//")
+          && !destination.includes("?")
+          && !destination.includes("#")
+          && destination.length <= 500
+        )
+        || externalDestinationPattern.test(destination)
+      )
+    )
+    || (eventType === "page_view" && destination !== null)
   ) {
     throw createError({ statusCode: 400, statusMessage: "Invalid telemetry event" });
   }
@@ -106,6 +123,7 @@ export default defineEventHandler(async (event) => {
           event_type,
           path,
           target_id,
+          destination,
           device_type,
           source,
           visitor_hash,
@@ -115,12 +133,36 @@ export default defineEventHandler(async (event) => {
           ${eventType},
           ${body.path as string},
           ${targetId},
+          ${destination},
           ${deviceType},
           ${trafficSource},
           ${visitorHash},
           ${sessionHash}
         )
-        returning system_id, occurred_at
+        returning system_id, visitor_hash, source, device_type, occurred_at
+      ),
+      visitor_upsert as (
+        insert into management.analytics_visitors (
+          system_id,
+          visitor_hash,
+          first_seen_at,
+          last_seen_at,
+          first_source,
+          first_device_type
+        )
+        select
+          system_id,
+          visitor_hash,
+          occurred_at,
+          occurred_at,
+          source,
+          device_type
+        from inserted
+        on conflict (system_id, visitor_hash) do update
+        set last_seen_at = greatest(
+          management.analytics_visitors.last_seen_at,
+          excluded.last_seen_at
+        )
       )
       update management.analytics_sources source
       set

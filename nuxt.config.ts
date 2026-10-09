@@ -44,6 +44,8 @@ export default defineNuxtConfig({
     databaseUrl: "",
     managementSessionSecret: "",
     landingAnalyticsToken: "",
+    cronSecret: "",
+    analyticsMigrationSecret: "",
   },
 
   app: {

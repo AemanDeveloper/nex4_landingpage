@@ -33,7 +33,8 @@ try {
     select
       to_regclass('management.users') is not null
       and to_regclass('management.analytics_sources') is not null
-      and to_regclass('management.traffic_events') is not null as ready
+      and to_regclass('management.traffic_events') is not null
+      and to_regclass('management.analytics_visitors') is not null as ready
   `;
 
   if (!result?.ready) throw new Error("Management database tables were not created.");

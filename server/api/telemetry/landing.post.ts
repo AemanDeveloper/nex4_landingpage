@@ -4,6 +4,7 @@ type LandingEvent = {
   eventType?: unknown;
   path?: unknown;
   targetId?: unknown;
+  destination?: unknown;
   deviceType?: unknown;
   source?: unknown;
   visitorId?: unknown;
@@ -14,6 +15,7 @@ const eventTypes = new Set(["page_view", "section_view", "button_click"]);
 const deviceTypes = new Set(["desktop", "tablet", "mobile"]);
 const anonymousIdPattern = /^[A-Za-z0-9_-]{16,128}$/;
 const labelPattern = /^[a-z0-9][a-z0-9._:/-]{0,119}$/;
+const externalDestinationPattern = /^external:[a-z0-9.-]{1,253}$/;
 const eventWindows = new Map<string, { count: number; resetsAt: number }>();
 
 export default defineEventHandler(async (event) => {
@@ -32,6 +34,7 @@ export default defineEventHandler(async (event) => {
   const body = await readBody<LandingEvent>(event);
   const eventType = typeof body.eventType === "string" ? body.eventType : "";
   const targetId = typeof body.targetId === "string" ? body.targetId : undefined;
+  const destination = typeof body.destination === "string" ? body.destination : undefined;
   const deviceType = typeof body.deviceType === "string" ? body.deviceType : "";
   const source = typeof body.source === "string" ? body.source : "";
 
@@ -47,6 +50,20 @@ export default defineEventHandler(async (event) => {
     || !anonymousIdPattern.test(body.sessionId)
     || (eventType === "page_view" && targetId !== undefined)
     || (eventType !== "page_view" && (!targetId || !labelPattern.test(targetId)))
+    || (
+      destination !== undefined
+      && !(
+        (
+          destination.startsWith("/")
+          && !destination.startsWith("//")
+          && !destination.includes("?")
+          && !destination.includes("#")
+          && destination.length <= 500
+        )
+        || externalDestinationPattern.test(destination)
+      )
+    )
+    || (eventType === "page_view" && destination !== undefined)
   ) {
     throw createError({ statusCode: 400, statusMessage: "Invalid telemetry event" });
   }
@@ -82,6 +99,7 @@ export default defineEventHandler(async (event) => {
         eventType,
         path: body.path,
         targetId,
+        destination,
         deviceType,
         source,
         visitorId: body.visitorId,

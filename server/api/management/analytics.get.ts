@@ -193,22 +193,12 @@ export default defineEventHandler(async (event) => {
           and (traffic.system_id <> 'lms-owner' or traffic.source = 'lms-user')
           and traffic.occurred_at >= range_start.starts_at
       ),
-      first_seen as (
-        select
-          system_id,
-          visitor_hash,
-          min(occurred_at) as first_seen_at
-        from management.traffic_events
-        where event_type = 'page_view'
-          and (system_id <> 'lms-owner' or source = 'lms-user')
-        group by system_id, visitor_hash
-      )
       select
         range_visitors.system_id,
-        count(*) filter (where first_seen.first_seen_at >= range_start.starts_at)::int as new_visitors,
-        count(*) filter (where first_seen.first_seen_at < range_start.starts_at)::int as returning_visitors
+        count(*) filter (where profile.first_seen_at >= range_start.starts_at)::int as new_visitors,
+        count(*) filter (where profile.first_seen_at < range_start.starts_at)::int as returning_visitors
       from range_visitors
-      join first_seen using (system_id, visitor_hash)
+      join management.analytics_visitors profile using (system_id, visitor_hash)
       cross join range_start
       group by range_visitors.system_id
     `,
