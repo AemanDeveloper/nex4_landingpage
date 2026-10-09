@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted } from "vue";
+import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 
 type DailyTraffic = {
   date: string;
@@ -48,12 +48,23 @@ type AnalyticsResponse = {
   };
 };
 
+type RangeDays = 1 | 7 | 30;
+
+const rangeOptions: { days: RangeDays; label: string; description: string }[] = [
+  { days: 1, label: "Today", description: "Daily" },
+  { days: 7, label: "Last 7 days", description: "Weekly" },
+  { days: 30, label: "Last 30 days", description: "Monthly" },
+];
+
+const selectedRange = ref<RangeDays>(7);
+
 const { data, error, status, refresh } = useFetch<AnalyticsResponse>(
   "/api/management/analytics",
   {
     cache: "no-store",
     lazy: true,
     server: false,
+    query: computed(() => ({ days: selectedRange.value })),
   },
 );
 
@@ -65,6 +76,42 @@ const dayFormatter = new Intl.DateTimeFormat("en-MY", {
   weekday: "short",
   timeZone: "Asia/Kuala_Lumpur",
 });
+const shortDateFormatter = new Intl.DateTimeFormat("en-MY", {
+  day: "numeric",
+  month: "short",
+  timeZone: "Asia/Kuala_Lumpur",
+});
+const fullDateFormatter = new Intl.DateTimeFormat("en-MY", {
+  day: "numeric",
+  month: "short",
+  year: "numeric",
+  timeZone: "Asia/Kuala_Lumpur",
+});
+const updatedFormatter = new Intl.DateTimeFormat("en-MY", {
+  day: "numeric",
+  month: "short",
+  hour: "numeric",
+  minute: "2-digit",
+  timeZone: "Asia/Kuala_Lumpur",
+});
+
+const activeRange = computed(
+  () => rangeOptions.find((option) => option.days === selectedRange.value)!,
+);
+const reportDateRange = computed(() => {
+  const days = systems.value[0]?.daily ?? [];
+  if (!days.length) return "Loading reporting dates…";
+
+  const start = new Date(`${days[0].date}T12:00:00+08:00`);
+  const end = new Date(`${days.at(-1)!.date}T12:00:00+08:00`);
+  if (days.length === 1) return fullDateFormatter.format(end);
+  return `${shortDateFormatter.format(start)} – ${fullDateFormatter.format(end)}`;
+});
+const lastUpdated = computed(() =>
+  data.value?.generatedAt
+    ? `Updated ${updatedFormatter.format(new Date(data.value.generatedAt))}`
+    : "",
+);
 
 function barHeight(system: TrafficSystem, value: number) {
   const maximum = Math.max(...system.daily.map((day) => day.pageViews), 1);
@@ -72,7 +119,10 @@ function barHeight(system: TrafficSystem, value: number) {
 }
 
 function formatDay(value: string) {
-  return dayFormatter.format(new Date(`${value}T12:00:00+08:00`));
+  const date = new Date(`${value}T12:00:00+08:00`);
+  if (selectedRange.value === 1) return "Today";
+  if (selectedRange.value === 7) return dayFormatter.format(date);
+  return shortDateFormatter.format(date);
 }
 
 function formatLabel(value: string) {
@@ -102,9 +152,29 @@ onBeforeUnmount(() => clearInterval(refreshTimer));
     <div class="traffic-heading">
       <div>
         <p class="traffic-eyebrow">Traffic analytics</p>
-        <h2 id="traffic-title">Last 7 days</h2>
+        <h2 id="traffic-title">Traffic overview</h2>
       </div>
-      <span class="privacy-note">Anonymous aggregate data only</span>
+      <div class="range-switcher" role="group" aria-label="Analytics reporting period">
+        <button
+          v-for="option in rangeOptions"
+          :key="option.days"
+          type="button"
+          :class="{ active: selectedRange === option.days }"
+          :aria-pressed="selectedRange === option.days"
+          @click="selectedRange = option.days"
+        >
+          <span>{{ option.label }}</span>
+          <small>{{ option.description }}</small>
+        </button>
+      </div>
+    </div>
+
+    <div class="report-context">
+      <div>
+        <strong>{{ activeRange.label }}</strong>
+        <span>{{ reportDateRange }}</span>
+      </div>
+      <span>{{ lastUpdated }} · Anonymous aggregate data only</span>
     </div>
 
     <div v-if="error" class="analytics-error" role="alert">
@@ -123,20 +193,25 @@ onBeforeUnmount(() => clearInterval(refreshTimer));
 
         <dl class="traffic-totals">
           <div>
-            <dt>Page views</dt>
+            <dt>Page views <small>Total page loads</small></dt>
             <dd>{{ numberFormatter.format(system.totals.pageViews) }}</dd>
           </div>
           <div>
-            <dt>Visitors</dt>
+            <dt>Unique visitors <small>Estimated individual browsers</small></dt>
             <dd>{{ numberFormatter.format(system.totals.uniqueVisitors) }}</dd>
           </div>
           <div>
-            <dt>Sessions</dt>
+            <dt>Sessions <small>Separate browsing visits</small></dt>
             <dd>{{ numberFormatter.format(system.totals.sessions) }}</dd>
           </div>
         </dl>
 
-        <div class="traffic-chart" aria-label="Daily page views">
+        <div
+          class="traffic-chart"
+          :class="{ 'single-day': system.daily.length === 1 }"
+          :style="{ '--chart-days': system.daily.length }"
+          :aria-label="`Daily page views for ${activeRange.label.toLowerCase()}`"
+        >
           <div v-for="day in system.daily" :key="day.date" class="bar-column">
             <span class="bar-value">{{ day.pageViews }}</span>
             <div class="bar-track">
@@ -154,7 +229,7 @@ onBeforeUnmount(() => clearInterval(refreshTimer));
           <p class="traffic-eyebrow">NEX4 landing engagement</p>
           <h3>Sections, actions and audience</h3>
         </div>
-        <span>Counts reset with the 7-day reporting window</span>
+        <span>Counts reflect {{ activeRange.label.toLowerCase() }}</span>
       </div>
 
       <div class="detail-grid">
@@ -257,6 +332,45 @@ onBeforeUnmount(() => clearInterval(refreshTimer));
   font-size: 30px;
   letter-spacing: -1px;
 }
+.range-switcher {
+  display: inline-grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  overflow: hidden;
+  padding: 3px;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 13px;
+  background: rgba(5, 8, 15, 0.78);
+}
+.range-switcher button {
+  min-width: 104px;
+  padding: 8px 13px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--nex4-text-muted);
+  text-align: left;
+  transition: background 180ms ease, color 180ms ease;
+}
+.range-switcher button span,
+.range-switcher button small { display: block; }
+.range-switcher button span { font-size: 11px; font-weight: 750; }
+.range-switcher button small { margin-top: 1px; font-size: 9px; opacity: 0.65; }
+.range-switcher button.active {
+  background: rgba(221, 168, 18, 0.14);
+  color: var(--nex4-text);
+  box-shadow: inset 0 0 0 1px rgba(221, 168, 18, 0.24);
+}
+.report-context {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin: -8px 0 22px;
+  color: var(--nex4-text-muted);
+  font-size: 10px;
+}
+.report-context > div { display: flex; align-items: center; gap: 9px; }
+.report-context strong { color: var(--nex4-text-secondary); font-size: 11px; }
 .privacy-note,
 .detail-heading > span,
 .detail-caption,
@@ -310,7 +424,8 @@ onBeforeUnmount(() => clearInterval(refreshTimer));
   gap: 10px;
   margin: 24px 0 28px;
 }
-.traffic-totals dt { color: var(--nex4-text-muted); font-size: 10px; }
+.traffic-totals dt { color: var(--nex4-text-muted); font-size: 10px; line-height: 1.35; }
+.traffic-totals dt small { display: block; margin-top: 2px; font-size: 8px; opacity: 0.65; }
 .traffic-totals dd {
   margin-top: 5px;
   font-family: "Manrope", sans-serif;
@@ -320,9 +435,12 @@ onBeforeUnmount(() => clearInterval(refreshTimer));
 .traffic-chart {
   height: 118px;
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
+  grid-template-columns: repeat(var(--chart-days), minmax(28px, 1fr));
   gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 4px;
 }
+.traffic-chart.single-day { grid-template-columns: minmax(48px, 72px); }
 .bar-column {
   min-width: 0;
   display: grid;
@@ -407,5 +525,11 @@ onBeforeUnmount(() => clearInterval(refreshTimer));
   .detail-heading { align-items: flex-start; flex-direction: column; }
   .traffic-card,
   .detail-card { padding: 20px; }
+  .range-switcher { width: 100%; }
+  .range-switcher button { min-width: 0; padding: 8px; text-align: center; }
+  .report-context { align-items: flex-start; flex-direction: column; gap: 5px; }
+  .traffic-totals { grid-template-columns: 1fr; }
+  .traffic-totals > div { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+  .traffic-totals dd { margin-top: 0; }
 }
 </style>

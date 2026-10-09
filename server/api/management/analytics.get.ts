@@ -40,13 +40,17 @@ const systemNames: Record<SystemId, string> = {
 export default defineEventHandler(async (event) => {
   setResponseHeader(event, "Cache-Control", "no-store");
 
+  const requestedRange = Number(getQuery(event).days);
+  const rangeDays = [1, 7, 30].includes(requestedRange) ? requestedRange : 7;
+  const rangeOffset = rangeDays - 1;
+
   const [rows, totalRows, interactionRows, deviceRows, sourceRows, lmsPageRows] = await runManagementQuery(
     event,
     (sql) => Promise.all([
     sql<AnalyticsRow[]>`
       with days as (
         select generate_series(
-          (now() at time zone 'Asia/Kuala_Lumpur')::date - interval '6 days',
+          (now() at time zone 'Asia/Kuala_Lumpur')::date - ${rangeOffset} * interval '1 day',
           (now() at time zone 'Asia/Kuala_Lumpur')::date,
           interval '1 day'
         )::date as day
@@ -85,7 +89,7 @@ export default defineEventHandler(async (event) => {
         and (source.system_id <> 'lms-owner' or traffic.source = 'lms-user')
         and traffic.occurred_at >= (
           (
-            (now() at time zone 'Asia/Kuala_Lumpur')::date - interval '6 days'
+            (now() at time zone 'Asia/Kuala_Lumpur')::date - ${rangeOffset} * interval '1 day'
           )::timestamp at time zone 'Asia/Kuala_Lumpur'
         )
       where source.is_active = true
@@ -102,7 +106,7 @@ export default defineEventHandler(async (event) => {
         and event_type in ('section_view', 'button_click')
         and occurred_at >= (
           (
-            (now() at time zone 'Asia/Kuala_Lumpur')::date - interval '6 days'
+            (now() at time zone 'Asia/Kuala_Lumpur')::date - ${rangeOffset} * interval '1 day'
           )::timestamp at time zone 'Asia/Kuala_Lumpur'
         )
       group by event_type, target_id
@@ -118,7 +122,7 @@ export default defineEventHandler(async (event) => {
         and event_type = 'page_view'
         and occurred_at >= (
           (
-            (now() at time zone 'Asia/Kuala_Lumpur')::date - interval '6 days'
+            (now() at time zone 'Asia/Kuala_Lumpur')::date - ${rangeOffset} * interval '1 day'
           )::timestamp at time zone 'Asia/Kuala_Lumpur'
         )
       group by device_type
@@ -134,7 +138,7 @@ export default defineEventHandler(async (event) => {
         and event_type = 'page_view'
         and occurred_at >= (
           (
-            (now() at time zone 'Asia/Kuala_Lumpur')::date - interval '6 days'
+            (now() at time zone 'Asia/Kuala_Lumpur')::date - ${rangeOffset} * interval '1 day'
           )::timestamp at time zone 'Asia/Kuala_Lumpur'
         )
       group by source
@@ -152,7 +156,7 @@ export default defineEventHandler(async (event) => {
         and source = 'lms-user'
         and occurred_at >= (
           (
-            (now() at time zone 'Asia/Kuala_Lumpur')::date - interval '6 days'
+            (now() at time zone 'Asia/Kuala_Lumpur')::date - ${rangeOffset} * interval '1 day'
           )::timestamp at time zone 'Asia/Kuala_Lumpur'
         )
       group by path
@@ -187,7 +191,7 @@ export default defineEventHandler(async (event) => {
     }));
 
   return {
-    rangeDays: 7,
+    rangeDays,
     generatedAt: new Date().toISOString(),
     systems: systemIds.map((systemId) => {
       const dailyRows = grouped.get(systemId) ?? [];
