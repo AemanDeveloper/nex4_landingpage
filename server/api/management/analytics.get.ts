@@ -192,7 +192,7 @@ export default defineEventHandler(async (event) => {
         where traffic.event_type = 'page_view'
           and (traffic.system_id <> 'lms-owner' or traffic.source = 'lms-user')
           and traffic.occurred_at >= range_start.starts_at
-      ),
+      )
       select
         range_visitors.system_id,
         count(*) filter (where profile.first_seen_at >= range_start.starts_at)::int as new_visitors,
