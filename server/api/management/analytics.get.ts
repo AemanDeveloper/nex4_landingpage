@@ -16,6 +16,12 @@ type AnalyticsTotalRow = {
   sessions: number;
 };
 
+type VisitorBreakdownRow = {
+  system_id: SystemId;
+  new_visitors: number;
+  returning_visitors: number;
+};
+
 type InteractionRow = {
   event_type: "section_view" | "button_click";
   target_id: string;
@@ -44,7 +50,15 @@ export default defineEventHandler(async (event) => {
   const rangeDays = [1, 7, 30].includes(requestedRange) ? requestedRange : 7;
   const rangeOffset = rangeDays - 1;
 
-  const [rows, totalRows, interactionRows, deviceRows, sourceRows, lmsPageRows] = await runManagementQuery(
+  const [
+    rows,
+    totalRows,
+    interactionRows,
+    deviceRows,
+    sourceRows,
+    lmsPageRows,
+    visitorBreakdownRows,
+  ] = await runManagementQuery(
     event,
     (sql) => Promise.all([
     sql<AnalyticsRow[]>`
@@ -163,6 +177,41 @@ export default defineEventHandler(async (event) => {
       order by page_views desc, path
       limit 12
     `,
+    sql<VisitorBreakdownRow[]>`
+      with range_start as (
+        select (
+          (
+            (now() at time zone 'Asia/Kuala_Lumpur')::date - ${rangeOffset} * interval '1 day'
+          )::timestamp at time zone 'Asia/Kuala_Lumpur'
+        ) as starts_at
+      ),
+      range_visitors as (
+        select distinct traffic.system_id, traffic.visitor_hash
+        from management.traffic_events traffic
+        cross join range_start
+        where traffic.event_type = 'page_view'
+          and (traffic.system_id <> 'lms-owner' or traffic.source = 'lms-user')
+          and traffic.occurred_at >= range_start.starts_at
+      ),
+      first_seen as (
+        select
+          system_id,
+          visitor_hash,
+          min(occurred_at) as first_seen_at
+        from management.traffic_events
+        where event_type = 'page_view'
+          and (system_id <> 'lms-owner' or source = 'lms-user')
+        group by system_id, visitor_hash
+      )
+      select
+        range_visitors.system_id,
+        count(*) filter (where first_seen.first_seen_at >= range_start.starts_at)::int as new_visitors,
+        count(*) filter (where first_seen.first_seen_at < range_start.starts_at)::int as returning_visitors
+      from range_visitors
+      join first_seen using (system_id, visitor_hash)
+      cross join range_start
+      group by range_visitors.system_id
+    `,
     ]),
   );
 
@@ -181,6 +230,13 @@ export default defineEventHandler(async (event) => {
     grouped.set(row.system_id, existing);
   }
 
+  const visitorBreakdownBySystem = new Map(
+    visitorBreakdownRows.map((row) => [row.system_id, {
+      newVisitors: Number(row.new_visitors),
+      returningVisitors: Number(row.returning_visitors),
+    }]),
+  );
+
   const interactions = (eventType: InteractionRow["event_type"]) => interactionRows
     .filter((row) => row.event_type === eventType)
     .slice(0, 12)
@@ -195,6 +251,11 @@ export default defineEventHandler(async (event) => {
     generatedAt: new Date().toISOString(),
     systems: systemIds.map((systemId) => {
       const dailyRows = grouped.get(systemId) ?? [];
+      const visitorBreakdown = visitorBreakdownBySystem.get(systemId) ?? {
+        newVisitors: 0,
+        returningVisitors: 0,
+      };
+      const visitorTotal = visitorBreakdown.newVisitors + visitorBreakdown.returningVisitors;
 
       return {
         id: systemId,
@@ -205,6 +266,12 @@ export default defineEventHandler(async (event) => {
           pageViews: 0,
           uniqueVisitors: 0,
           sessions: 0,
+        },
+        visitorBreakdown: {
+          ...visitorBreakdown,
+          returningRate: visitorTotal > 0
+            ? Math.round((visitorBreakdown.returningVisitors / visitorTotal) * 1000) / 10
+            : 0,
         },
         daily: dailyRows.map((row) => ({
           date: row.day,

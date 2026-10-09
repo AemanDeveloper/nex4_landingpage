@@ -18,6 +18,11 @@ type TrafficSystem = {
     uniqueVisitors: number;
     sessions: number;
   };
+  visitorBreakdown: {
+    newVisitors: number;
+    returningVisitors: number;
+    returningRate: number;
+  };
   daily: DailyTraffic[];
 };
 
@@ -205,6 +210,27 @@ onBeforeUnmount(() => clearInterval(refreshTimer));
             <dd>{{ numberFormatter.format(system.totals.sessions) }}</dd>
           </div>
         </dl>
+
+        <div class="visitor-breakdown">
+          <div class="visitor-breakdown-heading">
+            <strong>Visitor mix</strong>
+            <span>Based on first recorded anonymous visit</span>
+          </div>
+          <dl>
+            <div>
+              <dt>New visitors <small>First recorded in this period</small></dt>
+              <dd>{{ numberFormatter.format(system.visitorBreakdown.newVisitors) }}</dd>
+            </div>
+            <div>
+              <dt>Returning visitors <small>Seen before this period, then returned</small></dt>
+              <dd>{{ numberFormatter.format(system.visitorBreakdown.returningVisitors) }}</dd>
+            </div>
+            <div>
+              <dt>Returning rate <small>Returning share of unique visitors</small></dt>
+              <dd>{{ system.visitorBreakdown.returningRate.toFixed(1) }}%</dd>
+            </div>
+          </dl>
+        </div>
 
         <div
           class="traffic-chart"
@@ -432,6 +458,51 @@ onBeforeUnmount(() => clearInterval(refreshTimer));
   font-size: 20px;
   font-weight: 750;
 }
+.visitor-breakdown {
+  margin: -8px 0 26px;
+  padding: 14px 16px;
+  border: 1px solid rgba(221, 168, 18, 0.14);
+  border-radius: 13px;
+  background: rgba(221, 168, 18, 0.035);
+}
+.visitor-breakdown-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 13px;
+}
+.visitor-breakdown-heading strong {
+  color: var(--nex4-text-secondary);
+  font-size: 11px;
+}
+.visitor-breakdown-heading span {
+  color: var(--nex4-text-muted);
+  font-size: 8px;
+}
+.visitor-breakdown dl {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+.visitor-breakdown dt {
+  color: var(--nex4-text-muted);
+  font-size: 9px;
+  line-height: 1.35;
+}
+.visitor-breakdown dt small {
+  display: block;
+  margin-top: 2px;
+  font-size: 7px;
+  opacity: 0.65;
+}
+.visitor-breakdown dd {
+  margin-top: 5px;
+  color: var(--nex4-gold, #dda812);
+  font-family: "Manrope", sans-serif;
+  font-size: 16px;
+  font-weight: 750;
+}
 .traffic-chart {
   height: 118px;
   display: grid;
@@ -531,5 +602,9 @@ onBeforeUnmount(() => clearInterval(refreshTimer));
   .traffic-totals { grid-template-columns: 1fr; }
   .traffic-totals > div { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
   .traffic-totals dd { margin-top: 0; }
+  .visitor-breakdown-heading { align-items: flex-start; flex-direction: column; gap: 3px; }
+  .visitor-breakdown dl { grid-template-columns: 1fr; }
+  .visitor-breakdown dl > div { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+  .visitor-breakdown dd { margin-top: 0; }
 }
 </style>
