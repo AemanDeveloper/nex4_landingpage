@@ -6,7 +6,7 @@ definePageMeta({
 });
 
 type SystemStatus = {
-  id: "lms-owner" | "crm" | "nutritrack";
+  id: "lms-owner" | "crm" | "nutritrack" | "lensa";
   name: string;
   description: string;
   url: string;
@@ -52,6 +52,7 @@ function systemIcon(id: SystemStatus["id"]) {
     "lms-owner": "LMS",
     crm: "CRM",
     nutritrack: "NUTRI",
+    lensa: "LENSA",
   }[id];
 }
 

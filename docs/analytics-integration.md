@@ -1,7 +1,7 @@
 # NEX4 traffic analytics integration
 
 The management dashboard accepts privacy-minimised events from the NEX4 landing
-page, user-facing LMS, CRM, and NutriTrack projects. Each source receives a separate
+page, user-facing LMS, CRM, NutriTrack and Lensa projects. Each source receives a separate
 server-only token.
 
 The landing page records page views, section impressions, button/link clicks,
@@ -17,6 +17,7 @@ npm run analytics:create-source -- lms-owner
 npm run analytics:create-source -- crm
 npm run analytics:create-source -- nutritrack
 npm run analytics:create-source -- landing
+npm run analytics:create-source -- lensa
 ```
 
 Save each generated token in the matching application project as a server-only

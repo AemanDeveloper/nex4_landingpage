@@ -1,5 +1,5 @@
 type ManagedSystem = {
-  id: "lms-owner" | "crm" | "nutritrack";
+  id: "lms-owner" | "crm" | "nutritrack" | "lensa";
   name: string;
   description: string;
   url: string;
@@ -34,6 +34,13 @@ const systems: ManagedSystem[] = [
     description: "AI-powered nutrition tracking platform",
     url: "https://nutritrack.nex4.my/owner",
     actionLabel: "Open NutriTrack Owner",
+  },
+  {
+    id: "lensa",
+    name: "Lensa Admin",
+    description: "Photobooth platform administration",
+    url: process.env.NUXT_LENSA_ADMIN_URL || "https://lensa-admin.vercel.app/login",
+    actionLabel: "Open Lensa Admin",
   },
 ];
 

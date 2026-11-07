@@ -9,7 +9,7 @@ type DailyTraffic = {
 };
 
 type TrafficSystem = {
-  id: "landing" | "lms-owner" | "crm" | "nutritrack";
+  id: "landing" | "lms-owner" | "crm" | "nutritrack" | "lensa";
   name: string;
   connected: boolean;
   lastEventAt: string | null;

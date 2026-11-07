@@ -3,7 +3,7 @@ alter table management.analytics_sources
 
 alter table management.analytics_sources
   add constraint analytics_sources_system_id_allowed
-  check (system_id in ('landing', 'lms-owner', 'crm', 'nutritrack'));
+  check (system_id in ('landing', 'lms-owner', 'crm', 'nutritrack', 'lensa'));
 
 insert into management.analytics_sources (system_id)
 values ('landing')

@@ -12,7 +12,7 @@ type TrafficPayload = {
 };
 
 type AnalyticsSource = {
-  system_id: "landing" | "lms-owner" | "crm" | "nutritrack";
+  system_id: "landing" | "lms-owner" | "crm" | "nutritrack" | "lensa";
 };
 
 const eventWindows = new Map<string, { count: number; resetsAt: number }>();

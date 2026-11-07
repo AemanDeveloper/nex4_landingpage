@@ -1,4 +1,4 @@
-type SystemId = "landing" | "lms-owner" | "crm" | "nutritrack";
+type SystemId = "landing" | "lms-owner" | "crm" | "nutritrack" | "lensa";
 
 type SummaryRow = {
   page_views: number;
@@ -57,12 +57,13 @@ type JourneyRow = EventRow & {
   session_last_event_at: string;
 };
 
-const systemIds = new Set<SystemId>(["landing", "lms-owner", "crm", "nutritrack"]);
+const systemIds = new Set<SystemId>(["landing", "lms-owner", "crm", "nutritrack", "lensa"]);
 const systemNames: Record<SystemId, string> = {
   landing: "NEX4 Landing",
   "lms-owner": "NEX4 LMS",
   crm: "NEX4 CRM",
   nutritrack: "NEX4 NutriTrack",
+  lensa: "Lensa Photobooth",
 };
 
 export default defineEventHandler(async (event) => {

@@ -1,4 +1,4 @@
-type SystemId = "landing" | "lms-owner" | "crm" | "nutritrack";
+type SystemId = "landing" | "lms-owner" | "crm" | "nutritrack" | "lensa";
 
 type AnalyticsRow = {
   system_id: SystemId;
@@ -35,12 +35,13 @@ type DimensionRow = {
   unique_visitors: number;
 };
 
-const systemIds = ["landing", "lms-owner", "crm", "nutritrack"] as const;
+const systemIds = ["landing", "lms-owner", "crm", "nutritrack", "lensa"] as const;
 const systemNames: Record<SystemId, string> = {
   landing: "NEX4 Landing",
   "lms-owner": "NEX4 LMS",
   crm: "NEX4 CRM",
   nutritrack: "NEX4 NutriTrack",
+  lensa: "Lensa Photobooth",
 };
 
 export default defineEventHandler(async (event) => {

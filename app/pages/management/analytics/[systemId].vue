@@ -3,7 +3,7 @@ import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 
 definePageMeta({ middleware: "management-auth" });
 
-type SystemId = "landing" | "lms-owner" | "crm" | "nutritrack";
+type SystemId = "landing" | "lms-owner" | "crm" | "nutritrack" | "lensa";
 type RangeDays = 1 | 7 | 30;
 
 type AnalyticsResponse = {
@@ -72,7 +72,7 @@ type AnalyticsResponse = {
 };
 
 const route = useRoute();
-const validIds: SystemId[] = ["landing", "lms-owner", "crm", "nutritrack"];
+const validIds: SystemId[] = ["landing", "lms-owner", "crm", "nutritrack", "lensa"];
 const systemId = computed(() => String(route.params.systemId) as SystemId);
 if (!validIds.includes(systemId.value)) {
   throw createError({ statusCode: 404, statusMessage: "Analytics project not found" });
@@ -83,6 +83,7 @@ const themes: Record<SystemId, { accent: string; soft: string; label: string }> 
   "lms-owner": { accent: "#3b82f6", soft: "59, 130, 246", label: "LMS" },
   crm: { accent: "#8b5cf6", soft: "139, 92, 246", label: "CRM" },
   nutritrack: { accent: "#22c55e", soft: "34, 197, 94", label: "NutriTrack" },
+  lensa: { accent: "#f17656", soft: "241, 118, 86", label: "Lensa" },
 };
 const theme = computed(() => themes[systemId.value]);
 const rangeDays = ref<RangeDays>(7);
