@@ -39,7 +39,7 @@ const systems: ManagedSystem[] = [
     id: "lensa",
     name: "Lensa Admin",
     description: "Photobooth platform administration",
-    url: process.env.NUXT_LENSA_ADMIN_URL || "https://lensa-admin.vercel.app/login",
+    url: process.env.NUXT_LENSA_ADMIN_URL || "https://lensa-web.vercel.app/management/login",
     actionLabel: "Open Lensa Admin",
   },
 ];
