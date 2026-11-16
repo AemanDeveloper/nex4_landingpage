@@ -1,91 +1,161 @@
 <script setup lang="ts">
+import { onBeforeUnmount, onMounted, ref } from "vue";
+import { projects } from "~/data/home";
 import ArrowUpRightIcon from "~/components/ui/ArrowUpRightIcon.vue";
 import NoiseBackgroundButton from "~/components/ui/NoiseBackgroundButton.vue";
+
+const leadWords = ["We", "build", "digital"];
+const tailWords = ["that", "move", "businesses", "forward."];
+const rotatingWords = ["products", "websites", "mobile apps", "experiences"];
+
+const hero = ref<HTMLElement>();
+const wordElements = ref<HTMLElement[]>([]);
+const activeWord = ref(0);
+const previousWord = ref(-1);
+const rotatorWidth = ref<string>();
+
+let rotateTimer: ReturnType<typeof setInterval> | undefined;
+let frame = 0;
+let pointer: { x: number; y: number } | undefined;
+
+const setWordElement = (element: unknown, index: number) => {
+  if (element instanceof HTMLElement) wordElements.value[index] = element;
+};
+
+const measureWord = () => {
+  const element = wordElements.value[activeWord.value];
+  if (element) rotatorWidth.value = `${Math.ceil(element.getBoundingClientRect().width) + 2}px`;
+};
+
+const paint = () => {
+  frame = 0;
+  const element = hero.value;
+  if (!element) return;
+
+  const rect = element.getBoundingClientRect();
+  const progress = Math.min(1, Math.max(0, -rect.top / (rect.height * 0.8)));
+  element.style.setProperty("--hero-scroll", progress.toFixed(3));
+
+  if (pointer) {
+    element.style.setProperty("--px", `${pointer.x - rect.left}px`);
+    element.style.setProperty("--py", `${pointer.y - rect.top}px`);
+  }
+};
+
+const schedule = () => {
+  if (!frame) frame = requestAnimationFrame(paint);
+};
+
+const onPointerMove = (event: PointerEvent) => {
+  pointer = { x: event.clientX, y: event.clientY };
+  hero.value?.classList.add("has-pointer");
+  schedule();
+};
+
+onMounted(() => {
+  measureWord();
+  document.fonts?.ready.then(measureWord);
+  window.addEventListener("resize", measureWord);
+
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+  rotateTimer = setInterval(() => {
+    previousWord.value = activeWord.value;
+    activeWord.value = (activeWord.value + 1) % rotatingWords.length;
+    measureWord();
+  }, 2600);
+
+  window.addEventListener("scroll", schedule, { passive: true });
+  if (window.matchMedia("(hover: hover)").matches) {
+    hero.value?.addEventListener("pointermove", onPointerMove);
+  }
+});
+
+onBeforeUnmount(() => {
+  clearInterval(rotateTimer);
+  cancelAnimationFrame(frame);
+  window.removeEventListener("resize", measureWord);
+  window.removeEventListener("scroll", schedule);
+  hero.value?.removeEventListener("pointermove", onPointerMove);
+});
 </script>
 
 <template>
-  <section id="home" class="hero">
+  <section id="home" ref="hero" class="hero">
     <div class="background-grid" aria-hidden="true" />
+    <div class="grid-torch" aria-hidden="true" />
     <div class="aurora" aria-hidden="true">
       <div class="aurora-layer" />
       <div class="aurora-glow" />
     </div>
+    <div class="hero-orbit" aria-hidden="true"><i /><i /><i /></div>
 
     <div class="container hero-container">
       <div class="hero-content">
         <div class="eyebrow"><span /> NEX4 DIGITAL STUDIO</div>
-        <h1>
-          We build digital <em>products </em><br />that move businesses forward.
+
+        <h1 aria-label="We build digital products that move businesses forward.">
+          <span class="headline-line" aria-hidden="true">
+            <span
+              v-for="(word, index) in leadWords"
+              :key="word"
+              class="word"
+              :style="{ '--i': index }"
+            >{{ word }}</span>
+            <span class="rotator word" :style="{ '--i': leadWords.length, width: rotatorWidth }">
+              <span
+                v-for="(word, index) in rotatingWords"
+                :key="word"
+                :ref="(element) => setWordElement(element, index)"
+                class="rotator-word"
+                :class="{ 'is-active': index === activeWord, 'is-leaving': index === previousWord }"
+              >{{ word }}</span>
+            </span>
+          </span>
+          <span class="headline-line" aria-hidden="true">
+            <span
+              v-for="(word, index) in tailWords"
+              :key="word"
+              class="word"
+              :style="{ '--i': leadWords.length + 1 + index }"
+            >{{ word }}</span>
+          </span>
         </h1>
-        <p>
+
+        <p class="hero-lead">
           Websites, mobile applications and digital marketing brought together
           by one creative technology team.
         </p>
+
         <div class="hero-actions">
-          <NoiseBackgroundButton href="#contact" label="Start a Project" />
-          <a href="#work" class="secondary-button">View Our Work</a>
+          <NoiseBackgroundButton href="#contact" label="Start a Project" data-magnetic />
+          <a href="#work" class="secondary-button" data-magnetic>View Our Work</a>
         </div>
 
         <div class="project-signals" aria-label="NEX4 products">
-          <a
-            href="https://nutritrack.nex4.my"
-            target="_blank"
-            rel="noopener noreferrer"
+          <component
+            :is="project.link ? 'a' : 'div'"
+            v-for="(project, index) in projects"
+            :key="project.title"
+            class="signal"
+            :class="`signal--${project.tone}`"
+            :style="{ '--i': index }"
+            v-bind="project.link ? { href: project.link, target: '_blank', rel: 'noopener noreferrer' } : {}"
           >
-            <span class="signal-status signal-status--live">
-              <i />
-              LIVE
-            </span>
-
-            <strong>NEX4 NutriTrack</strong>
-
-            <ArrowUpRightIcon />
-          </a>
-
-          <a
-            href="https://crm.nex4.my"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <span class="signal-status signal-status--trial">
-              <i />
-              TRIAL
-            </span>
-
-            <strong>NEX4 CRM</strong>
-
-            <ArrowUpRightIcon />
-          </a>
-
-          <a
-            href="https://lms.nex4.my"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <span class="signal-status signal-status--demo">
-              <i />
-              DEMO
-            </span>
-
-            <strong>NEX4 LMS</strong>
-
-            <ArrowUpRightIcon />
-          </a>
+            <span class="signal-status"><i />{{ project.signal }}</span>
+            <strong>{{ project.shortTitle }}</strong>
+            <ArrowUpRightIcon v-if="project.link" />
+          </component>
         </div>
       </div>
     </div>
 
     <div class="hero-services" aria-label="NEX4 services">
       <div class="services-track">
-        <div class="services-row">
+        <div v-for="copy in 2" :key="copy" class="services-row" :aria-hidden="copy === 2">
           <span>Web Development</span><i /><span>Mobile Applications</span><i />
-          <span>AI Integration</span><i /><span>Digital Marketing</span
-          ><i /><span>Digital Products</span><i />
-        </div>
-        <div class="services-row" aria-hidden="true">
-          <span>Web Development</span><i /><span>Mobile Applications</span><i />
-          <span>AI Integration</span><i /><span>Digital Marketing</span
-          ><i /><span>Digital Products</span><i />
+          <span>AI Integration</span><i /><span>Digital Marketing</span><i />
+          <span>Digital Products</span><i />
         </div>
       </div>
     </div>
@@ -94,30 +164,42 @@ import NoiseBackgroundButton from "~/components/ui/NoiseBackgroundButton.vue";
 
 <style scoped>
 .hero {
+  --hero-scroll: 0;
+  --px: 50%;
+  --py: 30%;
   position: relative;
-  min-height: max(720px, 100svh);
+  min-height: max(760px, 100svh);
   display: flex;
   align-items: center;
   overflow: hidden;
   padding: 150px 0 120px;
   background: #000;
 }
-.background-grid {
+.background-grid,
+.grid-torch {
   position: absolute;
   inset: -64px;
+  background-size: 64px 64px;
+  animation: grid-drift 18s linear infinite;
+}
+.background-grid {
   opacity: 0.55;
   background-image:
     linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
     linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
-  background-size: 64px 64px;
-  mask-image: linear-gradient(
-    to bottom,
-    transparent,
-    black 20%,
-    black 82%,
-    transparent
-  );
-  animation: grid-drift 18s linear infinite;
+  mask-image: linear-gradient(to bottom, transparent, black 20%, black 82%, transparent);
+}
+/* A brighter gold grid that is only revealed in a circle around the cursor. */
+.grid-torch {
+  opacity: 0;
+  background-image:
+    linear-gradient(rgba(221, 168, 18, 0.34) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(221, 168, 18, 0.34) 1px, transparent 1px);
+  mask-image: radial-gradient(260px circle at calc(var(--px) + 64px) calc(var(--py) + 64px), black, transparent 72%);
+  transition: opacity 0.6s ease;
+}
+.hero.has-pointer .grid-torch {
+  opacity: 1;
 }
 .aurora {
   position: absolute;
@@ -126,50 +208,33 @@ import NoiseBackgroundButton from "~/components/ui/NoiseBackgroundButton.vue";
   overflow: hidden;
   pointer-events: none;
   mask-image: linear-gradient(to bottom, black 0%, black 72%, transparent 100%);
+  transform: translateY(calc(var(--hero-scroll) * 90px));
 }
 .aurora-layer {
   position: absolute;
   inset: -45%;
   opacity: 0;
   background-image:
-    repeating-linear-gradient(
-      100deg,
-      #000 0%,
-      #000 7%,
-      transparent 10%,
-      transparent 12%,
-      #000 16%
-    ),
-    repeating-linear-gradient(
-      100deg,
-      #3b82f6 10%,
-      #a5b4fc 15%,
-      #93c5fd 20%,
-      #ddd6fe 25%,
-      #60a5fa 30%
-    );
+    repeating-linear-gradient(100deg, #000 0%, #000 7%, transparent 10%, transparent 12%, #000 16%),
+    repeating-linear-gradient(100deg, #dda812 10%, #7c8cf8 15%, #fff1b8 20%, #3b82f6 25%, #f2c94c 30%);
   background-size:
     300% 220%,
     200% 180%;
   background-position:
     50% 50%,
     50% 50%;
-  filter: blur(36px) saturate(1.25);
+  filter: blur(36px) saturate(1.2);
   transform: rotate(-8deg) scale(1.12);
   mix-blend-mode: screen;
   animation:
-    aurora-enter 1.2s 0.05s var(--motion-ease) forwards,
-    aurora-shift 60s 1.2s linear infinite;
+    aurora-enter 1.4s 0.05s var(--motion-ease) forwards,
+    aurora-shift 60s 1.4s linear infinite;
 }
 .aurora-layer::after {
   content: "";
   position: absolute;
   inset: 0;
-  background: radial-gradient(
-    ellipse at 50% 15%,
-    rgba(129, 140, 248, 0.42),
-    rgba(5, 7, 12, 0) 55%
-  );
+  background: radial-gradient(ellipse at 50% 15%, rgba(221, 168, 18, 0.3), rgba(5, 7, 12, 0) 55%);
 }
 .aurora-glow {
   position: absolute;
@@ -179,26 +244,70 @@ import NoiseBackgroundButton from "~/components/ui/NoiseBackgroundButton.vue";
   height: 700px;
   transform: translateX(-50%);
   border-radius: 50%;
-  background: radial-gradient(
-    ellipse,
-    rgba(96, 165, 250, 0.17),
-    rgba(139, 92, 246, 0.07) 45%,
-    transparent 72%
-  );
+  background: radial-gradient(ellipse, rgba(221, 168, 18, 0.15), rgba(96, 165, 250, 0.08) 45%, transparent 72%);
   filter: blur(45px);
   animation: soft-pulse 9s ease-in-out infinite;
+}
+/* Three thin rings turning slowly behind the headline. */
+.hero-orbit {
+  position: absolute;
+  z-index: 1;
+  top: 50%;
+  left: 50%;
+  width: min(1180px, 150vw);
+  aspect-ratio: 1;
+  transform: translate(-50%, -46%) scale(calc(1 + var(--hero-scroll) * 0.25));
+  opacity: calc(0.9 - var(--hero-scroll));
+  pointer-events: none;
+  mask-image: radial-gradient(circle, black 30%, transparent 68%);
+}
+.hero-orbit i {
+  position: absolute;
+  inset: 0;
+  border: 1px solid rgba(255, 255, 255, 0.055);
+  border-radius: 50%;
+  animation: orbit-turn 46s linear infinite;
+}
+.hero-orbit i:nth-child(2) {
+  inset: 14%;
+  border-style: dashed;
+  border-color: rgba(221, 168, 18, 0.16);
+  animation-duration: 70s;
+  animation-direction: reverse;
+}
+.hero-orbit i:nth-child(3) {
+  inset: 28%;
+  animation-duration: 34s;
+}
+.hero-orbit i::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: -4px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--nex4-gold);
+  box-shadow: 0 0 16px 3px rgba(221, 168, 18, 0.7);
+}
+.hero-orbit i:nth-child(2)::after {
+  top: 14%;
+  left: 14%;
+  background: var(--nex4-cream);
+  box-shadow: 0 0 14px 2px rgba(250, 247, 240, 0.5);
 }
 .hero-container {
   position: relative;
   z-index: 2;
   display: flex;
   justify-content: center;
+  transform: translateY(calc(var(--hero-scroll) * -50px)) scale(calc(1 - var(--hero-scroll) * 0.07));
+  opacity: calc(1 - var(--hero-scroll) * 1.15);
 }
 .hero-content {
-  width: min(100%, 1080px);
-  padding-top: 125px;
+  width: min(100%, 1200px);
+  padding-top: 110px;
   text-align: center;
-  animation: hero-enter var(--motion-slow) 0.3s both var(--motion-ease);
 }
 .eyebrow {
   display: flex;
@@ -210,6 +319,7 @@ import NoiseBackgroundButton from "~/components/ui/NoiseBackgroundButton.vue";
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 2px;
+  animation: rise-in 0.9s 0.15s both var(--motion-ease);
 }
 .eyebrow span {
   width: 7px;
@@ -217,91 +327,105 @@ import NoiseBackgroundButton from "~/components/ui/NoiseBackgroundButton.vue";
   border-radius: 50%;
   background: var(--nex4-green);
   box-shadow: 0 0 14px rgba(221, 168, 18, 0.8);
+  animation: status-pulse 2.2s ease-in-out infinite;
 }
 h1 {
-  max-width: 1050px;
   margin: 0 auto;
   font-family: "Manrope", sans-serif;
-  font-size: clamp(58px, 6.3vw, 92px);
+  font-size: clamp(54px, 5.6vw, 84px);
   font-weight: 600;
-  line-height: 0.98;
-  letter-spacing: -5.5px;
-  text-wrap: balance;
+  line-height: 1.02;
+  letter-spacing: -0.06em;
 }
-h1 em {
+.headline-line {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0 0.2em;
+}
+.word {
+  display: inline-block;
+  animation: word-in 1s both var(--motion-ease);
+  animation-delay: calc(0.25s + var(--i) * 80ms);
+}
+.rotator {
+  display: inline-grid;
+  overflow: hidden;
+  /* Room for descenders so the clipped box does not cut "p". */
+  padding: 0.16em 0.06em;
+  margin: -0.16em -0.06em;
+  text-align: left;
+  transition: width 0.7s var(--motion-ease);
+}
+.rotator-word {
+  grid-area: 1 / 1;
+  justify-self: start;
+  white-space: nowrap;
   color: transparent;
-  font-style: normal;
   background: var(--nex4-gradient);
+  background-size: 200% 100%;
   background-clip: text;
   -webkit-background-clip: text;
+  opacity: 0;
+  transform: translateY(105%) rotateX(-70deg);
+  transform-origin: 50% 0;
+  transition:
+    transform 0.75s var(--motion-ease),
+    opacity 0.5s ease;
+  animation: gradient-slide 5s ease-in-out infinite alternate;
 }
-.hero-content > p {
+.rotator-word.is-active {
+  opacity: 1;
+  transform: none;
+}
+.rotator-word.is-leaving {
+  transform: translateY(-105%) rotateX(70deg);
+  transform-origin: 50% 100%;
+}
+.hero-lead {
   max-width: 650px;
   margin: 28px auto 0;
   color: var(--nex4-text-secondary);
   font-size: 17px;
   line-height: 1.75;
+  animation: rise-in 1s 0.95s both var(--motion-ease);
 }
 .hero-actions {
   display: flex;
   justify-content: center;
   gap: 12px;
   margin-top: 34px;
+  animation: rise-in 1s 1.1s both var(--motion-ease);
 }
 .project-signals {
-  width: min(100%, 720px);
-
+  width: min(100%, 940px);
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 12px;
-
-  margin: 28px auto 0;
+  margin: 30px auto 0;
 }
-
-.project-signals a {
+.signal {
   position: relative;
   z-index: 0;
-
   min-width: 0;
   min-height: 58px;
-
   display: grid;
   grid-template-columns: auto 1fr auto;
   align-items: center;
-
   gap: 10px;
-
   padding: 14px 16px;
-
   overflow: hidden;
-
   border-radius: 12px;
-
   color: var(--nex4-text);
-
+  text-align: left;
   background: rgba(4, 6, 10, 0.82);
-
+  animation: rise-in 0.9s both var(--motion-ease);
+  animation-delay: calc(1.25s + var(--i) * 90ms);
   transition:
     transform 0.25s ease,
     box-shadow 0.25s ease;
 }
-
-.project-signals strong {
-  overflow: hidden;
-
-  white-space: nowrap;
-  text-overflow: ellipsis;
-
-  font-size: 12px;
-}
-
-@media (max-width: 700px) {
-  .project-signals {
-    grid-template-columns: 1fr;
-  }
-}
-.project-signals a::before {
+.signal::before {
   content: "";
   position: absolute;
   z-index: -2;
@@ -315,8 +439,9 @@ h1 em {
     transparent 100%
   );
   animation: moving-border 3.4s linear infinite;
+  animation-delay: calc(var(--i) * -0.85s);
 }
-.project-signals a::after {
+.signal::after {
   content: "";
   position: absolute;
   z-index: -1;
@@ -324,18 +449,25 @@ h1 em {
   border-radius: 12px;
   background: rgba(4, 6, 10, 0.92);
 }
-.project-signals a:hover,
-.project-signals a:focus-visible {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 35px rgba(221, 168, 18, 0.12);
+a.signal:hover,
+a.signal:focus-visible {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 35px rgba(221, 168, 18, 0.14);
   outline: none;
 }
-.project-signals strong {
+.signal strong {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
   font-size: 14px;
 }
-.project-signals > a > :deep(svg) {
+.signal > :deep(svg) {
   color: var(--nex4-green);
   font-size: 15px;
+  transition: transform var(--motion-fast) var(--motion-ease);
+}
+a.signal:hover > :deep(svg) {
+  transform: translate(2px, -2px);
 }
 .signal-status {
   display: flex;
@@ -345,6 +477,7 @@ h1 em {
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.8px;
+  white-space: nowrap;
 }
 .signal-status i {
   width: 6px;
@@ -354,18 +487,31 @@ h1 em {
   box-shadow: 0 0 9px rgba(221, 168, 18, 0.75);
   animation: status-pulse 1.8s ease-in-out infinite;
 }
-.signal-status--live i {
+.signal--live .signal-status i {
   background: #32ef45;
   box-shadow: 0 0 9px rgba(50, 239, 69, 0.75);
 }
-.signal-status--trial i {
-  background: #e8b51a;
-  box-shadow: 0 0 10px rgba(232, 181, 26, 0.75);
+.signal--new .signal-status {
+  color: var(--nex4-coral);
 }
-
-.signal-status--demo i {
-  background: #62a8ff;
-  box-shadow: 0 0 10px rgba(98, 168, 255, 0.75);
+.signal--new .signal-status i {
+  background: var(--nex4-coral);
+  box-shadow: 0 0 10px rgba(241, 118, 86, 0.8);
+}
+/* A closed product keeps its place in the row but stops moving. */
+.signal--closed {
+  grid-template-columns: auto 1fr;
+  color: var(--nex4-text-muted);
+}
+.signal--closed::before {
+  inset: 0;
+  background: rgba(255, 255, 255, 0.09);
+  animation: none;
+}
+.signal--closed .signal-status i {
+  background: #6b7280;
+  box-shadow: none;
+  animation: none;
 }
 .hero-services {
   position: absolute;
@@ -375,6 +521,7 @@ h1 em {
   overflow: hidden;
   border-top: 1px solid var(--nex4-border);
   background: rgba(255, 255, 255, 0.01);
+  mask-image: linear-gradient(90deg, transparent, black 12%, black 88%, transparent);
 }
 .services-track {
   display: flex;
@@ -397,6 +544,12 @@ h1 em {
   text-transform: uppercase;
   white-space: nowrap;
 }
+.services-row span {
+  transition: color 0.3s ease;
+}
+.services-row span:hover {
+  color: var(--nex4-gold);
+}
 .services-row i {
   width: 4px;
   height: 4px;
@@ -405,10 +558,27 @@ h1 em {
   background: var(--nex4-green);
 }
 
-@keyframes hero-enter {
+@keyframes word-in {
   from {
     opacity: 0;
-    transform: translateY(28px);
+    filter: blur(14px);
+    transform: translateY(0.5em) rotate(3deg);
+  }
+}
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(22px);
+  }
+}
+@keyframes gradient-slide {
+  to {
+    background-position: 100% 0;
+  }
+}
+@keyframes orbit-turn {
+  to {
+    transform: rotate(1turn);
   }
 }
 @keyframes aurora-enter {
@@ -417,7 +587,7 @@ h1 em {
     transform: rotate(-8deg) scale(0.9);
   }
   to {
-    opacity: 0.32;
+    opacity: 0.3;
     transform: rotate(-8deg) scale(1.12);
   }
 }
@@ -444,9 +614,15 @@ h1 em {
   }
 }
 
+@media (max-width: 900px) {
+  .project-signals {
+    width: min(100%, 520px);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
 @media (max-width: 700px) {
   .hero {
-    min-height: max(760px, 100svh);
+    min-height: max(820px, 100svh);
     padding: 120px 0 105px;
   }
   .aurora-layer {
@@ -458,22 +634,29 @@ h1 em {
     width: 150vw;
     height: 520px;
   }
+  .hero-orbit {
+    width: 190vw;
+  }
   .hero-content {
-    padding-top: 86px;
+    padding-top: 70px;
   }
   .eyebrow {
     margin-bottom: 20px;
     font-size: 11px;
   }
   h1 {
-    font-size: clamp(42px, 12vw, 52px);
-    line-height: 1.01;
-    letter-spacing: -3.1px;
+    font-size: clamp(40px, 11.6vw, 52px);
+    line-height: 1.05;
   }
-  h1 br {
-    display: none;
+  /* The rotating word gets its own centred line so the others never reflow. */
+  .rotator {
+    width: 100% !important;
+    justify-items: center;
   }
-  .hero-content > p {
+  .rotator-word {
+    justify-self: center;
+  }
+  .hero-lead {
     margin-top: 23px;
     font-size: 16px;
     line-height: 1.65;
@@ -489,16 +672,18 @@ h1 em {
     margin-top: 22px;
     gap: 8px;
   }
-  .project-signals a {
-    min-height: 56px;
-    padding: 9px 10px;
-    gap: 8px;
-  }
-  .project-signals strong {
-    font-size: 13px;
+  .signal,
+  .signal--closed {
+    grid-template-columns: 1fr auto;
+    gap: 2px 8px;
+    padding: 10px 12px;
   }
   .signal-status {
+    grid-column: 1 / -1;
     font-size: 9px;
+  }
+  .signal strong {
+    font-size: 13px;
   }
   .services-track {
     animation-duration: 18s;
@@ -506,6 +691,17 @@ h1 em {
   .services-row {
     gap: 34px;
     padding-right: 34px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-container,
+  .aurora,
+  .hero-orbit {
+    transform: none;
+    opacity: 1;
+  }
+  .hero-orbit {
+    transform: translate(-50%, -46%);
   }
 }
 </style>

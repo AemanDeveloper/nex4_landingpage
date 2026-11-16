@@ -120,7 +120,9 @@ export default defineNuxtPlugin((nuxtApp) => {
   const sectionObserver = new IntersectionObserver(
     (entries) => {
       for (const entry of entries) {
-        if (!entry.isIntersecting || entry.intersectionRatio < 0.3) continue;
+        // A section taller than the screen can never reach 30% of itself, so filling half the viewport also counts.
+        const viewportShare = entry.intersectionRect.height / (entry.rootBounds?.height || window.innerHeight);
+        if (!entry.isIntersecting || (entry.intersectionRatio < 0.3 && viewportShare < 0.5)) continue;
         const sectionId = (entry.target as HTMLElement).id;
         if (!sectionId || seenSections.has(sectionId)) continue;
         seenSections.add(sectionId);
@@ -128,7 +130,7 @@ export default defineNuxtPlugin((nuxtApp) => {
         sectionObserver.unobserve(entry.target);
       }
     },
-    { threshold: [0.3] },
+    { threshold: [0.05, 0.1, 0.15, 0.2, 0.3] },
   );
 
   function onClick(event: MouseEvent) {

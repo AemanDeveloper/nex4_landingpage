@@ -15,11 +15,40 @@ const siteDescription =
   "NEX4 is a Malaysia-based digital studio building websites, mobile applications, AI-powered products and practical marketing experiences.";
 
 let revealObserver: IntersectionObserver | undefined;
+const cleanups: Array<() => void> = [];
+
+// Writes the cursor position onto whichever [data-spotlight] element is under it.
+const onSpotlightMove = (event: PointerEvent) => {
+  const target = (event.target as HTMLElement | null)?.closest?.<HTMLElement>("[data-spotlight]");
+  if (!target) return;
+  const rect = target.getBoundingClientRect();
+  target.style.setProperty("--mx", `${event.clientX - rect.left}px`);
+  target.style.setProperty("--my", `${event.clientY - rect.top}px`);
+};
+
+// Buttons marked [data-magnetic] lean towards the cursor and spring back on leave.
+const bindMagnetic = (element: HTMLElement) => {
+  const onMove = (event: PointerEvent) => {
+    const rect = element.getBoundingClientRect();
+    const x = (event.clientX - rect.left - rect.width / 2) * 0.22;
+    const y = (event.clientY - rect.top - rect.height / 2) * 0.32;
+    element.style.transition = "transform 120ms ease-out";
+    element.style.transform = `translate(${x.toFixed(1)}px, ${y.toFixed(1)}px)`;
+  };
+  const onLeave = () => {
+    element.style.transition = "transform 600ms cubic-bezier(0.34, 1.56, 0.64, 1)";
+    element.style.transform = "";
+  };
+  element.addEventListener("pointermove", onMove);
+  element.addEventListener("pointerleave", onLeave);
+  cleanups.push(() => {
+    element.removeEventListener("pointermove", onMove);
+    element.removeEventListener("pointerleave", onLeave);
+  });
+};
 
 onMounted(() => {
-  const items = document.querySelectorAll<HTMLElement>(
-    ".section-label, .section-title, .services-header > p, .service-terminal, .projects-header > p, .about-content, .team-header > p, .team-card, .contact-content",
-  );
+  const items = document.querySelectorAll<HTMLElement>("[data-reveal]");
 
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
     items.forEach((item) => item.classList.add("is-visible"));
@@ -41,9 +70,18 @@ onMounted(() => {
     item.classList.add("reveal-item");
     revealObserver?.observe(item);
   });
+
+  if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
+    document.addEventListener("pointermove", onSpotlightMove, { passive: true });
+    cleanups.push(() => document.removeEventListener("pointermove", onSpotlightMove));
+    document.querySelectorAll<HTMLElement>("[data-magnetic]").forEach(bindMagnetic);
+  }
 });
 
-onBeforeUnmount(() => revealObserver?.disconnect());
+onBeforeUnmount(() => {
+  revealObserver?.disconnect();
+  cleanups.forEach((cleanup) => cleanup());
+});
 
 useSeoMeta({
   title: siteTitle,

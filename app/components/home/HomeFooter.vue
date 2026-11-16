@@ -1,3 +1,7 @@
+<script setup lang="ts">
+import { projects } from "~/data/home";
+</script>
+
 <template>
   <footer class="footer">
     <div class="container">
@@ -28,6 +32,15 @@
           </div>
 
           <div>
+            <span class="footer-title"> Products </span>
+
+            <template v-for="project in projects" :key="project.title">
+              <a v-if="project.link" :href="project.link" target="_blank" rel="noopener noreferrer">{{ project.shortTitle }}</a>
+              <span v-else class="footer-closed">{{ project.shortTitle }} <small>beta closed</small></span>
+            </template>
+          </div>
+
+          <div>
             <span class="footer-title"> Services </span>
 
             <a href="#services"> Web Development </a>
@@ -46,6 +59,8 @@
           </div>
         </div>
       </div>
+
+      <div class="footer-wordmark-giant" aria-hidden="true">NEX4</div>
 
       <div class="footer-divider" />
 
@@ -117,9 +132,72 @@
 .footer-navigation {
   display: grid;
 
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, auto);
 
-  gap: 50px;
+  justify-content: space-between;
+
+  gap: 40px;
+}
+
+.footer-closed {
+  color: var(--nex4-text-muted);
+
+  font-size: 14px;
+}
+
+.footer-closed small {
+  margin-left: 4px;
+
+  font-size: 10px;
+
+  letter-spacing: 0.6px;
+
+  text-transform: uppercase;
+}
+
+/* Outlined wordmark that fills with gold on hover. */
+.footer-wordmark-giant {
+  margin: 70px 0 -0.16em;
+
+  color: transparent;
+
+  font-family: "Manrope", sans-serif;
+
+  font-size: clamp(110px, 27vw, 400px);
+
+  font-weight: 800;
+
+  line-height: 0.8;
+
+  letter-spacing: -0.06em;
+
+  text-align: center;
+
+  user-select: none;
+
+  -webkit-text-stroke: 1px rgba(255, 255, 255, 0.17);
+
+  background: linear-gradient(100deg, transparent 35%, rgba(221, 168, 18, 0.55) 50%, transparent 65%);
+
+  background-size: 300% 100%;
+
+  background-clip: text;
+
+  -webkit-background-clip: text;
+
+  mask-image: linear-gradient(to bottom, black 30%, transparent 96%);
+
+  animation: wordmark-sweep 8s linear infinite;
+}
+
+@keyframes wordmark-sweep {
+  from {
+    background-position: 150% 0;
+  }
+
+  to {
+    background-position: -150% 0;
+  }
 }
 
 .footer-navigation > div {
@@ -143,21 +221,29 @@
 }
 
 .footer-navigation a {
+  width: fit-content;
+
   color: var(--nex4-text-secondary);
 
   font-size: 14px;
 
-  transition: color 0.2s ease;
+  background: linear-gradient(var(--nex4-gold), var(--nex4-gold)) no-repeat 0 100% / 0 1px;
+
+  transition:
+    color 0.2s ease,
+    background-size var(--motion-medium) var(--motion-ease);
 }
 
 .footer-navigation a:hover {
   color: var(--nex4-green);
+
+  background-size: 100% 1px;
 }
 
 .footer-divider {
   height: 1px;
 
-  margin-top: 80px;
+  margin-top: 0;
 
   background: var(--nex4-border);
 }
@@ -192,6 +278,12 @@
   background: var(--nex4-green);
 
   box-shadow: 0 0 8px rgba(221, 168, 18, 0.8);
+}
+
+@media (max-width: 1100px) {
+  .footer-navigation {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 @media (max-width: 850px) {

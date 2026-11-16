@@ -11,9 +11,16 @@ img { max-width: 100%; display: block; }
 ::selection { background: rgba(221,168,18,.28); color: #fff; }
 .container { width: min(calc(100% - 60px),var(--container-width)); margin: 0 auto; }
 .section { position: relative; padding: 130px 0; }
-.section-label { margin-bottom: 18px; color: var(--nex4-green); font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; }
+
+/* Film grain that sits above everything and ties the dark surfaces together. */
+body::after { content: ""; position: fixed; z-index: 90; inset: 0; opacity: .05; pointer-events: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E"); mix-blend-mode: overlay; }
+
+.section-label { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; color: var(--nex4-green); font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; }
+.section-label::before { content: ""; width: 34px; height: 1px; background: linear-gradient(90deg,var(--nex4-gold),transparent); transform-origin: left; transition: transform var(--motion-slow) var(--motion-ease) .15s; }
+.section-label.reveal-item:not(.is-visible)::before { transform: scaleX(0); }
 .section-title { font-family: "Manrope",sans-serif; font-size: clamp(42px,5vw,66px); font-weight: 600; line-height: 1; letter-spacing: -3px; }
 .section-title span { color: #7d8493; }
+
 .primary-button,.secondary-button { min-height: 52px; display: inline-flex; align-items: center; justify-content: center; gap: 12px; padding: 0 24px; border-radius: 999px; font-size: 14px; font-weight: 700; transition: var(--motion-fast) var(--motion-ease); }
 .primary-button { background: var(--nex4-green); color: var(--nex4-navy); }
 .primary-button:hover { transform: translateY(-2px); background: var(--nex4-green-bright); box-shadow: 0 12px 35px rgba(221,168,18,.2); }
@@ -21,12 +28,26 @@ img { max-width: 100%; display: block; }
 .secondary-button:hover { transform:translateY(-2px); border-color:rgba(255,255,255,.25); background:linear-gradient(145deg,rgba(255,255,255,.13),rgba(255,255,255,.03)); box-shadow:inset 0 1px rgba(255,255,255,.16),0 16px 38px rgba(0,0,0,.24); }
 .primary-button:focus-visible,.secondary-button:focus-visible,a:focus-visible,button:focus-visible { outline: 2px solid var(--nex4-green); outline-offset: 4px; }
 
-.reveal-item { opacity: 0; transform: translateY(24px); transition: opacity var(--motion-medium) var(--motion-ease),transform var(--motion-medium) var(--motion-ease); }
-.reveal-item.is-visible { opacity: 1; transform: translateY(0); }
+/* Scroll reveals. The reveal-item class is added by JS, so content stays visible without it. */
+.reveal-item { opacity: 0; transform: translateY(28px); filter: blur(8px); transition: opacity var(--motion-medium) var(--motion-ease),transform var(--motion-slow) var(--motion-ease),filter var(--motion-medium) var(--motion-ease),clip-path var(--motion-slow) var(--motion-ease); transition-delay: var(--reveal-delay,0ms); }
+/* The mask variant hides with opacity (not clip-path) while waiting, so the observer can still see it. */
+.reveal-item[data-reveal="mask"] { filter: none; transform: none; transition: none; }
+.reveal-item[data-reveal="mask"].is-visible { animation: mask-rise var(--motion-slow) var(--motion-ease) var(--reveal-delay,0ms) both; }
+@keyframes mask-rise { from { opacity: 1; transform: translateY(26%); clip-path: inset(-10% -5% 110% -5%); } to { opacity: 1; transform: none; clip-path: inset(-25% -5% -25% -5%); } }
+.reveal-item[data-reveal="scale"] { transform: scale(.94) translateY(20px); }
+.reveal-item[data-reveal="plain"] { filter: none; }
+.reveal-item.is-visible { opacity: 1; transform: none; filter: none; }
+
+/* Pointer spotlight: JS writes --mx / --my on the element under the cursor. */
+[data-spotlight] { position: relative; }
+[data-spotlight]::before { content: ""; position: absolute; z-index: 0; inset: 0; border-radius: inherit; opacity: 0; pointer-events: none; background: radial-gradient(420px circle at var(--mx,50%) var(--my,50%),rgba(var(--nex4-gold-rgb),.13),transparent 62%); transition: opacity .4s ease; }
+[data-spotlight]:hover::before { opacity: 1; }
+
+[data-magnetic] { will-change: transform; }
 
 @keyframes grid-drift { to { background-position: 64px 64px; } }
 @keyframes soft-pulse { 50% { opacity:.68; transform:scale(1.06); } }
 @keyframes status-pulse { 50% { opacity:.45; box-shadow:0 0 18px var(--nex4-green); } }
 
 @media (max-width:768px) { .container { width:min(calc(100% - 32px),var(--container-width)); } .section { padding:90px 0; } }
-@media (prefers-reduced-motion:reduce) { html { scroll-behavior:auto; } *,*::before,*::after { animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; scroll-behavior:auto !important; } .reveal-item { opacity:1; transform:none; } }
+@media (prefers-reduced-motion:reduce) { html { scroll-behavior:auto; } *,*::before,*::after { animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; transition-delay:0ms !important; scroll-behavior:auto !important; } .reveal-item,.reveal-item[data-reveal] { opacity:1; transform:none; filter:none; clip-path:none; } }

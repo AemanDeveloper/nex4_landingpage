@@ -8,7 +8,9 @@ import ArrowUpRightIcon from "~/components/ui/ArrowUpRightIcon.vue";
 
     <div class="contact-glow" />
 
-    <div class="container contact-content">
+    <div class="contact-rings" aria-hidden="true"><i /><i /><i /></div>
+
+    <div class="container contact-content" data-reveal>
       <div class="contact-label">HAVE AN IDEA?</div>
 
       <h2>
@@ -22,7 +24,7 @@ import ArrowUpRightIcon from "~/components/ui/ArrowUpRightIcon.vue";
       </p>
 
       <div class="contact-actions">
-        <a href="mailto:nex4digitalstudio@gmail.com" class="contact-primary">
+        <a href="mailto:nex4digitalstudio@gmail.com" class="contact-primary" data-magnetic>
           nex4digitalstudio@gmail.com
 
           <ArrowUpRightIcon />
@@ -159,7 +161,7 @@ h2 .contact-heading-accent {
   font-weight: 600;
 
   transition:
-    transform 0.25s ease,
+    box-shadow 0.25s ease,
     border-color 0.25s ease;
 }
 
@@ -174,7 +176,78 @@ h2 .contact-heading-accent {
 }
 
 .contact-primary:hover {
-  transform: translateY(-3px);
+  box-shadow: 0 20px 60px rgba(221, 168, 18, 0.34);
+}
+
+.contact-primary :deep(svg) {
+  transition: transform var(--motion-fast) var(--motion-ease);
+}
+
+.contact-primary:hover :deep(svg) {
+  transform: translate(3px, -3px);
+}
+
+.contact-heading-accent {
+  background-size: 200% 100% !important;
+
+  animation: contact-shimmer 5s ease-in-out infinite alternate;
+}
+
+@keyframes contact-shimmer {
+  to {
+    background-position: 100% 0;
+  }
+}
+
+.contact-rings {
+  position: absolute;
+
+  top: 50%;
+  left: 50%;
+
+  width: min(1100px, 170vw);
+
+  aspect-ratio: 1;
+
+  transform: translate(-50%, -50%);
+
+  pointer-events: none;
+
+  mask-image: radial-gradient(circle, black 35%, transparent 70%);
+}
+
+.contact-rings i {
+  position: absolute;
+
+  inset: 0;
+
+  border: 1px solid rgba(221, 168, 18, 0.2);
+
+  border-radius: 50%;
+
+  opacity: 0;
+
+  animation: ring-ripple 9s linear infinite;
+}
+
+.contact-rings i:nth-child(2) {
+  animation-delay: -3s;
+}
+
+.contact-rings i:nth-child(3) {
+  animation-delay: -6s;
+}
+
+@keyframes ring-ripple {
+  from {
+    opacity: 0.9;
+    transform: scale(0.15);
+  }
+
+  to {
+    opacity: 0;
+    transform: scale(1);
+  }
 }
 
 .contact-secondary {

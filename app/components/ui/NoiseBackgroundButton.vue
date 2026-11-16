@@ -29,15 +29,15 @@ defineProps<{
   border: 0;
   border-radius: 999px;
   background:
-    radial-gradient(circle at 10% 20%, rgb(255, 100, 150), transparent 38%),
+    radial-gradient(circle at 10% 20%, rgb(241, 118, 86), transparent 38%),
     radial-gradient(circle at 88% 18%, rgb(100, 150, 255), transparent 42%),
-    radial-gradient(circle at 50% 120%, rgb(255, 200, 100), transparent 55%),
+    radial-gradient(circle at 50% 120%, rgb(242, 201, 76), transparent 55%),
     #171717;
-  box-shadow: 0 14px 44px rgba(100, 150, 255, 0.14);
+  box-shadow: 0 14px 44px rgba(221, 168, 18, 0.16);
   color: #fff;
   font-size: 14px;
   font-weight: 700;
-  transition: transform var(--motion-fast) var(--motion-ease), box-shadow var(--motion-fast) var(--motion-ease);
+  transition: box-shadow var(--motion-fast) var(--motion-ease);
 }
 
 .noise-button::before {
@@ -57,7 +57,7 @@ defineProps<{
   position: absolute;
   z-index: 0;
   inset: -45%;
-  background: conic-gradient(from 0deg, rgb(255,100,150), rgb(100,150,255), rgb(255,200,100), rgb(255,100,150));
+  background: conic-gradient(from 0deg, #dda812, #fff1b8, rgb(100,150,255), #f17656, #dda812);
   filter: blur(16px);
   opacity: 0.55;
   animation: gradient-orbit 7s linear infinite;
@@ -80,11 +80,9 @@ defineProps<{
 }
 
 .noise-button:hover {
-  transform: translateY(-3px) scale(1.015);
-  box-shadow: 0 20px 55px rgba(100, 150, 255, 0.22);
+  box-shadow: 0 20px 55px rgba(221, 168, 18, 0.26);
 }
 
-.noise-button:active { transform:translateY(-1px) scale(.98); }
 .noise-button :deep(svg) { transition: transform var(--motion-fast) var(--motion-ease); }
 .noise-button:hover :deep(svg) { transform: translate(2px, -2px); }
 

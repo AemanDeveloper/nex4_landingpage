@@ -11,7 +11,12 @@ NEX4 is an independent digital studio based in Malaysia. We bring development an
 ## Live products
 
 - MyNutriTrack AI: https://nutritrack.nex4.my
-- NEX4 Marketing CRM public beta: https://crm.nex4.my
+- NEX4 Marketing CRM, open for trial: https://crm.nex4.my
+- Sebingkai, a photobooth platform: https://sebingkai.nex4.my
+
+## Other products
+
+- NEX4 LMS, a learning management system. Beta testing is closed.
 
 ## Team portfolios
 
