@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { services } from "~/data/home";
+import ServiceScenes from "~/components/home/ServiceScenes.vue";
 </script>
 
 <template>
@@ -12,6 +13,8 @@ import { services } from "~/data/home";
         </div>
         <p data-reveal style="--reveal-delay: 120ms">Development and marketing working together to turn ideas into useful digital experiences.</p>
       </div>
+
+      <ServiceScenes />
 
       <div class="service-terminal" data-reveal="scale" data-spotlight aria-label="NEX4 services terminal">
         <div class="terminal-beam" aria-hidden="true" />

@@ -123,6 +123,15 @@ function barHeight(system: TrafficSystem, value: number) {
   return `${Math.max((value / maximum) * 100, value > 0 ? 8 : 2)}%`;
 }
 
+// Brand colour for each tracked project, as "r, g, b".
+const accents: Record<TrafficSystem["id"], string> = {
+  landing: "221, 168, 18",
+  "lms-owner": "47, 179, 154",
+  crm: "139, 123, 255",
+  nutritrack: "47, 213, 115",
+  lensa: "241, 118, 86",
+};
+
 // Share of the largest value in a list, used for the bars drawn behind each row.
 function share(value: number, values: number[]) {
   return `${(value / Math.max(...values, 1)) * 100}%`;
@@ -192,7 +201,7 @@ onBeforeUnmount(() => clearInterval(refreshTimer));
     </div>
 
     <div class="traffic-grid" :aria-busy="status === 'pending'">
-      <article v-for="(system, index) in systems" :key="system.id" class="traffic-card mgmt-card mgmt-enter" :style="{ '--i': index }" data-spotlight>
+      <article v-for="(system, index) in systems" :key="system.id" class="traffic-card mgmt-card mgmt-enter" :style="{ '--i': index, '--mgmt-accent-rgb': accents[system.id] }" data-spotlight>
         <header>
           <h3>{{ system.name }}</h3>
           <div class="card-actions">
@@ -652,4 +661,14 @@ onBeforeUnmount(() => clearInterval(refreshTimer));
 .metric-list span { font-size: 13px; text-transform: capitalize; }
 .lms-detail-grid .metric-list span { text-transform: none; }
 .metric-list strong { font-size: 14px; font-variant-numeric: tabular-nums; }
+/* Each project card is tinted with its own brand colour. */
+.traffic-card { background: radial-gradient(circle at 0 0, rgba(var(--mgmt-accent-rgb), 0.11), transparent 42%), linear-gradient(145deg, rgba(18, 26, 43, 0.82), rgba(7, 10, 18, 0.9)); }
+.traffic-card[data-spotlight]::before { background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 50%), rgba(var(--mgmt-accent-rgb), 0.14), transparent 62%); }
+.traffic-card h3::before { content: ""; display: inline-block; width: 9px; height: 9px; margin-right: 10px; border-radius: 3px; background: rgb(var(--mgmt-accent-rgb)); box-shadow: 0 0 12px rgba(var(--mgmt-accent-rgb), 0.8); }
+.traffic-card .bar-track i { background: linear-gradient(to top, rgba(var(--mgmt-accent-rgb), 0.55), rgb(var(--mgmt-accent-rgb))); }
+.traffic-card .bar-column:hover .bar-track i { box-shadow: 0 0 14px rgba(var(--mgmt-accent-rgb), 0.7); }
+.traffic-card .details-link,
+.traffic-card .visitor-breakdown dd { color: rgb(var(--mgmt-accent-rgb)); }
+.traffic-card .visitor-breakdown { border-color: rgba(var(--mgmt-accent-rgb), 0.2); background: rgba(var(--mgmt-accent-rgb), 0.04); }
+.traffic-card .mix-bar i { background: rgb(var(--mgmt-accent-rgb)); }
 </style>

@@ -36,7 +36,18 @@ export const services = [
 
 export type ProjectTone = "live" | "trial" | "new" | "closed";
 
+export type ProjectMotif = "nutrition" | "pipeline" | "film" | "lessons";
+
+// Each product keeps its own brand colour so its card feels like the product itself.
+export type ProjectTheme = {
+  accent: string;
+  rgb: string;
+  alt: string;
+};
+
 export type Project = {
+  theme: ProjectTheme;
+  motif: ProjectMotif;
   category: string;
   title: string;
   shortTitle: string;
@@ -56,6 +67,8 @@ export type Project = {
 
 export const projects: Project[] = [
   {
+    theme: { accent: "#2fd573", rgb: "47, 213, 115", alt: "#b8f5cf" },
+    motif: "nutrition",
     category: "AI APPLICATION",
     title: "NEX4 NutriTrack AI",
     shortTitle: "NutriTrack",
@@ -73,6 +86,8 @@ export const projects: Project[] = [
   },
 
   {
+    theme: { accent: "#8b7bff", rgb: "139, 123, 255", alt: "#d6d0ff" },
+    motif: "pipeline",
     category: "BUSINESS SYSTEM",
     title: "NEX4 Marketing CRM",
     shortTitle: "NEX4 CRM",
@@ -90,6 +105,8 @@ export const projects: Project[] = [
   },
 
   {
+    theme: { accent: "#f17656", rgb: "241, 118, 86", alt: "#ffd9a8" },
+    motif: "film",
     category: "PHOTOBOOTH PLATFORM",
     title: "Sebingkai",
     shortTitle: "Sebingkai",
@@ -107,6 +124,8 @@ export const projects: Project[] = [
   },
 
   {
+    theme: { accent: "#2fb39a", rgb: "47, 179, 154", alt: "#c8ec60" },
+    motif: "lessons",
     category: "EDUCATION PLATFORM",
     title: "NEX4 LMS",
     shortTitle: "NEX4 LMS",

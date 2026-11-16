@@ -3,6 +3,7 @@ import { onBeforeUnmount, onMounted } from "vue";
 import HomeNavbar from "~/components/home/HomeNavbar.vue";
 import HeroSection from "~/components/home/HeroSection.vue";
 import ServicesSection from "~/components/home/ServicesSection.vue";
+import KineticBand from "~/components/home/KineticBand.vue";
 import ProjectsSection from "~/components/home/ProjectsSection.vue";
 import AboutSection from "~/components/home/AboutSection.vue";
 import TeamSection from "~/components/home/TeamSection.vue";
@@ -144,6 +145,8 @@ useHead({
       <HeroSection />
 
       <ServicesSection />
+
+      <KineticBand />
 
       <ProjectsSection />
 

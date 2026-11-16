@@ -89,6 +89,14 @@ onBeforeUnmount(() => {
       <div class="aurora-glow" />
     </div>
     <div class="hero-orbit" aria-hidden="true"><i /><i /><i /></div>
+    <div class="hero-shapes" aria-hidden="true">
+      <svg class="shape shape--plus" viewBox="0 0 24 24"><path d="M12 3v18M3 12h18" /></svg>
+      <svg class="shape shape--ring" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" /></svg>
+      <svg class="shape shape--tri" viewBox="0 0 24 24"><path d="M12 3 22 20H2Z" /></svg>
+      <svg class="shape shape--wave" viewBox="0 0 60 16"><path pathLength="1" d="M2 8c7-9 7 9 14 0s7 9 14 0 7 9 14 0 7 9 14 0" /></svg>
+      <svg class="shape shape--square" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3" /></svg>
+      <svg class="shape shape--star" viewBox="0 0 40 40"><path d="M20 0c2 12 6 16 20 20-14 4-18 8-20 20-2-12-6-16-20-20C14 16 18 12 20 0Z" /></svg>
+    </div>
 
     <div class="container hero-container">
       <div class="hero-content">
@@ -110,6 +118,9 @@ onBeforeUnmount(() => {
                 class="rotator-word"
                 :class="{ 'is-active': index === activeWord, 'is-leaving': index === previousWord }"
               >{{ word }}</span>
+              <svg :key="activeWord" class="scribble" viewBox="0 0 100 10" preserveAspectRatio="none">
+                <path pathLength="1" d="M1 6 C 14 1, 24 9, 38 5 S 62 1, 76 6 92 7, 99 3" />
+              </svg>
             </span>
           </span>
           <span class="headline-line" aria-hidden="true">
@@ -139,7 +150,7 @@ onBeforeUnmount(() => {
             :key="project.title"
             class="signal"
             :class="`signal--${project.tone}`"
-            :style="{ '--i': index }"
+            :style="{ '--i': index, '--p': project.theme.accent, '--p-rgb': project.theme.rgb, '--p-alt': project.theme.alt }"
             v-bind="project.link ? { href: project.link, target: '_blank', rel: 'noopener noreferrer' } : {}"
           >
             <span class="signal-status"><i />{{ project.signal }}</span>
@@ -296,6 +307,67 @@ onBeforeUnmount(() => {
   background: var(--nex4-cream);
   box-shadow: 0 0 14px 2px rgba(250, 247, 240, 0.5);
 }
+/* Small drawn shapes drifting at the edges, like marks on a motion designer's canvas. */
+.hero-shapes {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  pointer-events: none;
+  opacity: calc(1 - var(--hero-scroll) * 1.4);
+}
+.shape {
+  position: absolute;
+  width: 34px;
+  fill: none;
+  stroke: var(--nex4-gold);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  overflow: visible;
+  opacity: 0.75;
+  animation: shape-drift 9s ease-in-out infinite;
+}
+.shape--plus { top: 24%; left: 7%; animation-name: shape-spin-drift; animation-duration: 14s; }
+.shape--ring { top: 66%; left: 11%; width: 26px; stroke: var(--nex4-cream); opacity: 0.4; animation-delay: -3s; }
+.shape--tri { top: 30%; right: 8%; width: 30px; stroke: var(--nex4-coral); animation-name: shape-spin-drift; animation-duration: 18s; animation-direction: reverse; }
+.shape--wave { top: 72%; right: 9%; width: 86px; stroke-dasharray: 1; animation: wave-draw 5s var(--motion-ease) infinite alternate; }
+.shape--square { top: 16%; right: 22%; width: 20px; stroke: #7c8cf8; opacity: 0.5; animation-delay: -5s; }
+.shape--star { top: 58%; left: 22%; width: 22px; fill: var(--nex4-gold); stroke: none; animation: star-twinkle 3.4s ease-in-out infinite; }
+.scribble {
+  position: absolute;
+  left: 2%;
+  bottom: 0.02em;
+  width: 96%;
+  height: 0.16em;
+  overflow: visible;
+}
+.scribble path {
+  fill: none;
+  stroke: var(--nex4-gold);
+  stroke-width: 3;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+  stroke-dasharray: 1;
+  animation: scribble-draw 0.9s 0.35s var(--motion-ease) backwards;
+}
+@keyframes scribble-draw {
+  from { stroke-dashoffset: 1; }
+}
+@keyframes shape-drift {
+  50% { translate: 0 -22px; rotate: 12deg; }
+}
+@keyframes shape-spin-drift {
+  50% { translate: 14px -18px; }
+  to { rotate: 1turn; }
+}
+@keyframes wave-draw {
+  from { stroke-dashoffset: 1; }
+  to { stroke-dashoffset: 0; }
+}
+@keyframes star-twinkle {
+  0%, 100% { scale: 0.4; opacity: 0.2; rotate: 0deg; }
+  50% { scale: 1.2; opacity: 1; rotate: 90deg; }
+}
 .hero-container {
   position: relative;
   z-index: 2;
@@ -349,6 +421,7 @@ h1 {
   animation-delay: calc(0.25s + var(--i) * 80ms);
 }
 .rotator {
+  position: relative;
   display: inline-grid;
   overflow: hidden;
   /* Room for descenders so the clipped box does not cut "p". */
@@ -433,9 +506,9 @@ h1 {
   background: conic-gradient(
     from 0deg,
     transparent 0 76%,
-    rgba(221, 168, 18, 0.12) 82%,
-    #dda812 90%,
-    #fff1b8 94%,
+    rgba(var(--p-rgb), 0.12) 82%,
+    var(--p) 90%,
+    var(--p-alt) 94%,
     transparent 100%
   );
   animation: moving-border 3.4s linear infinite;
@@ -452,7 +525,7 @@ h1 {
 a.signal:hover,
 a.signal:focus-visible {
   transform: translateY(-3px);
-  box-shadow: 0 12px 35px rgba(221, 168, 18, 0.14);
+  box-shadow: 0 12px 35px rgba(var(--p-rgb), 0.2);
   outline: none;
 }
 .signal strong {
@@ -462,7 +535,7 @@ a.signal:focus-visible {
   font-size: 14px;
 }
 .signal > :deep(svg) {
-  color: var(--nex4-green);
+  color: var(--p);
   font-size: 15px;
   transition: transform var(--motion-fast) var(--motion-ease);
 }
@@ -637,6 +710,15 @@ a.signal:hover > :deep(svg) {
   .hero-orbit {
     width: 190vw;
   }
+  .shape--square,
+  .shape--star,
+  .shape--ring {
+    display: none;
+  }
+  .shape--plus { top: 13%; left: 6%; width: 22px; }
+  .shape--tri { top: 14%; right: 7%; width: 20px; }
+  .shape--wave { top: auto; bottom: 86px; right: 6%; width: 54px; }
+  .scribble { left: 50%; width: 46%; margin-left: -23%; }
   .hero-content {
     padding-top: 70px;
   }

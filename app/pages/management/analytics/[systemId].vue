@@ -80,9 +80,9 @@ if (!validIds.includes(systemId.value)) {
 
 const themes: Record<SystemId, { accent: string; soft: string; label: string }> = {
   landing: { accent: "#dda812", soft: "221, 168, 18", label: "Landing" },
-  "lms-owner": { accent: "#3b82f6", soft: "59, 130, 246", label: "LMS" },
-  crm: { accent: "#8b5cf6", soft: "139, 92, 246", label: "CRM" },
-  nutritrack: { accent: "#22c55e", soft: "34, 197, 94", label: "NutriTrack" },
+  "lms-owner": { accent: "#2fb39a", soft: "47, 179, 154", label: "LMS" },
+  crm: { accent: "#8b7bff", soft: "139, 123, 255", label: "CRM" },
+  nutritrack: { accent: "#2fd573", soft: "47, 213, 115", label: "NutriTrack" },
   lensa: { accent: "#f17656", soft: "241, 118, 86", label: "Sebingkai" },
 };
 const theme = computed(() => themes[systemId.value]);
