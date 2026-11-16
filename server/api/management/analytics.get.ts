@@ -41,7 +41,7 @@ const systemNames: Record<SystemId, string> = {
   "lms-owner": "NEX4 LMS",
   crm: "NEX4 CRM",
   nutritrack: "NEX4 NutriTrack",
-  lensa: "Lensa Photobooth",
+  lensa: "Sebingkai Photobooth",
 };
 
 export default defineEventHandler(async (event) => {

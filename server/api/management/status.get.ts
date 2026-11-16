@@ -37,10 +37,11 @@ const systems: ManagedSystem[] = [
   },
   {
     id: "lensa",
-    name: "Lensa Admin",
+    // The product was renamed from Lensa to Sebingkai; its internal id stays "lensa" so its traffic history is kept.
+    name: "Sebingkai Admin",
     description: "Photobooth platform administration",
-    url: process.env.NUXT_LENSA_ADMIN_URL || "https://lensa.nex4.my/management/login",
-    actionLabel: "Open Lensa Admin",
+    url: process.env.NUXT_SEBINGKAI_ADMIN_URL || "https://sebingkai.nex4.my/management/login",
+    actionLabel: "Open Sebingkai Admin",
   },
 ];
 

@@ -83,7 +83,7 @@ const themes: Record<SystemId, { accent: string; soft: string; label: string }> 
   "lms-owner": { accent: "#3b82f6", soft: "59, 130, 246", label: "LMS" },
   crm: { accent: "#8b5cf6", soft: "139, 92, 246", label: "CRM" },
   nutritrack: { accent: "#22c55e", soft: "34, 197, 94", label: "NutriTrack" },
-  lensa: { accent: "#f17656", soft: "241, 118, 86", label: "Lensa" },
+  lensa: { accent: "#f17656", soft: "241, 118, 86", label: "Sebingkai" },
 };
 const theme = computed(() => themes[systemId.value]);
 const rangeDays = ref<RangeDays>(7);

@@ -52,7 +52,7 @@ function systemIcon(id: SystemStatus["id"]) {
     "lms-owner": "LMS",
     crm: "CRM",
     nutritrack: "NUTRI",
-    lensa: "LENSA",
+    lensa: "SBK",
   }[id];
 }
 

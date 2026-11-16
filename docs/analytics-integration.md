@@ -1,7 +1,7 @@
 # NEX4 traffic analytics integration
 
 The management dashboard accepts privacy-minimised events from the NEX4 landing
-page, user-facing LMS, CRM, NutriTrack and Lensa projects. Each source receives a separate
+page, user-facing LMS, CRM, NutriTrack and Sebingkai (source id `lensa`) projects. Each source receives a separate
 server-only token.
 
 The landing page records page views, section impressions, button/link clicks,
