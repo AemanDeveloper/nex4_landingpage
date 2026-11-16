@@ -3,7 +3,7 @@ export default defineNuxtConfig({
     enabled: false,
   },
 
-  css: ["~/assets/css/theme.css", "~/assets/css/main.css"],
+  css: ["~/assets/css/theme.css", "~/assets/css/main.css", "~/assets/css/management.css"],
 
   routeRules: {
     "/management": {

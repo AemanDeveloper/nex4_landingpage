@@ -1,0 +1,39 @@
+/* Shared look and motion for the management console (login, dashboard, analytics). */
+
+.mgmt-page { position: relative; min-height: 100vh; overflow-x: clip; background: #03050a; }
+
+.mgmt-grid { position: fixed; inset: -64px; opacity: .5; pointer-events: none; background-image: linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px); background-size: 64px 64px; mask-image: linear-gradient(to bottom,black,transparent 88%); animation: grid-drift 24s linear infinite; }
+.mgmt-glow { position: fixed; top: -380px; left: 50%; width: 1100px; height: 680px; margin-left: -550px; border-radius: 50%; pointer-events: none; background: radial-gradient(ellipse,rgba(var(--mgmt-accent-rgb,221,168,18),.17),rgba(96,165,250,.06) 42%,transparent 70%); filter: blur(50px); animation: soft-pulse 10s ease-in-out infinite; }
+
+/* Floating glass bar, the same shape as the landing page navbar. */
+.mgmt-topbar { position: sticky; z-index: 20; top: 0; padding-top: 14px; pointer-events: none; }
+.mgmt-topbar-inner { position: relative; min-height: 60px; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 0 12px 0 14px; border: 1px solid rgba(255,255,255,.11); border-radius: 999px; background: radial-gradient(circle at 12% -40%,rgba(255,255,255,.14),transparent 38%),linear-gradient(115deg,rgba(17,24,39,.8),rgba(5,7,13,.66)); box-shadow: 0 18px 45px rgba(0,0,0,.34),inset 0 1px 0 rgba(255,255,255,.08); backdrop-filter: blur(24px) saturate(155%); -webkit-backdrop-filter: blur(24px) saturate(155%); pointer-events: auto; animation: mgmt-drop .8s var(--motion-ease) backwards; }
+.mgmt-topbar-inner::before { content: ""; position: absolute; inset: 1px 12% auto; height: 1px; background: linear-gradient(90deg,transparent,rgba(255,255,255,.32),transparent); pointer-events: none; }
+.mgmt-brand { display: flex; align-items: center; gap: 10px; font-family: "Manrope",sans-serif; font-size: 18px; font-weight: 800; }
+.mgmt-brand img { width: 34px; height: 31px; object-fit: contain; transition: transform var(--motion-medium) var(--motion-spring); }
+.mgmt-brand:hover img { transform: rotate(-12deg) scale(1.1); }
+.mgmt-pill-button { min-height: 38px; display: inline-flex; align-items: center; gap: 8px; padding: 0 16px; border: 1px solid rgba(255,255,255,.13); border-radius: 999px; background: rgba(255,255,255,.045); color: var(--nex4-text-secondary); font-size: 13px; font-weight: 700; transition: border-color .25s ease,color .25s ease,background .25s ease,transform .25s var(--motion-ease); }
+.mgmt-pill-button:hover:not(:disabled) { transform: translateY(-1px); border-color: rgba(var(--mgmt-accent-rgb,221,168,18),.45); background: rgba(var(--mgmt-accent-rgb,221,168,18),.09); color: var(--nex4-text); }
+.mgmt-pill-button:disabled { cursor: wait; opacity: .65; }
+
+/* Staggered entrance. Set --i on each item to order them. */
+.mgmt-enter { animation: mgmt-enter .8s var(--motion-ease) backwards; animation-delay: calc(var(--i,0) * 70ms); }
+
+/* Card surface with a lift on hover; pair with data-spotlight for the cursor glow. */
+.mgmt-card { position: relative; border: 1px solid rgba(255,255,255,.09); border-radius: 20px; background: linear-gradient(145deg,rgba(18,26,43,.82),rgba(7,10,18,.9)); box-shadow: 0 20px 60px rgba(0,0,0,.22),inset 0 1px rgba(255,255,255,.045); transition: border-color .3s ease,box-shadow .3s ease,translate var(--motion-medium) var(--motion-ease); }
+.mgmt-card > * { position: relative; z-index: 1; }
+.mgmt-card:hover { translate: 0 -4px; border-color: rgba(var(--mgmt-accent-rgb,221,168,18),.3); box-shadow: 0 30px 70px rgba(0,0,0,.36),inset 0 1px rgba(255,255,255,.06); }
+
+/* Chart bars grow from the baseline when they first appear. */
+.mgmt-bar { transform-origin: bottom; animation: mgmt-bar-grow .9s var(--motion-ease) backwards; animation-delay: calc(var(--i,0) * 35ms + .2s); transition: height var(--motion-medium) var(--motion-ease),width var(--motion-medium) var(--motion-ease); }
+.mgmt-bar--x { transform-origin: left; animation-name: mgmt-bar-grow-x; }
+
+.mgmt-skeleton { border-radius: 20px; background: linear-gradient(100deg,rgba(255,255,255,.03) 30%,rgba(255,255,255,.08) 50%,rgba(255,255,255,.03) 70%); background-size: 250% 100%; animation: mgmt-shimmer 1.6s linear infinite; }
+
+@keyframes mgmt-enter { from { opacity: 0; transform: translateY(22px); filter: blur(8px); } }
+@keyframes mgmt-drop { from { opacity: 0; transform: translateY(-22px); } }
+@keyframes mgmt-bar-grow { from { transform: scaleY(0); } }
+@keyframes mgmt-bar-grow-x { from { transform: scaleX(0); } }
+@keyframes mgmt-shimmer { from { background-position: 120% 0; } to { background-position: -130% 0; } }
+@keyframes mgmt-ping { 0% { transform: scale(1); opacity: .7; } 100% { transform: scale(3.2); opacity: 0; } }
+@keyframes mgmt-spin { to { transform: rotate(1turn); } }

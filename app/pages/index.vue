@@ -14,17 +14,10 @@ const siteTitle = "NEX4 — Digital Products, Development & Marketing";
 const siteDescription =
   "NEX4 is a Malaysia-based digital studio building websites, mobile applications, AI-powered products and practical marketing experiences.";
 
+usePointerSpotlight();
+
 let revealObserver: IntersectionObserver | undefined;
 const cleanups: Array<() => void> = [];
-
-// Writes the cursor position onto whichever [data-spotlight] element is under it.
-const onSpotlightMove = (event: PointerEvent) => {
-  const target = (event.target as HTMLElement | null)?.closest?.<HTMLElement>("[data-spotlight]");
-  if (!target) return;
-  const rect = target.getBoundingClientRect();
-  target.style.setProperty("--mx", `${event.clientX - rect.left}px`);
-  target.style.setProperty("--my", `${event.clientY - rect.top}px`);
-};
 
 // Buttons marked [data-magnetic] lean towards the cursor and spring back on leave.
 const bindMagnetic = (element: HTMLElement) => {
@@ -72,8 +65,6 @@ onMounted(() => {
   });
 
   if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
-    document.addEventListener("pointermove", onSpotlightMove, { passive: true });
-    cleanups.push(() => document.removeEventListener("pointermove", onSpotlightMove));
     document.querySelectorAll<HTMLElement>("[data-magnetic]").forEach(bindMagnetic);
   }
 });

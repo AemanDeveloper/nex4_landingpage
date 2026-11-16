@@ -123,6 +123,11 @@ function barHeight(system: TrafficSystem, value: number) {
   return `${Math.max((value / maximum) * 100, value > 0 ? 8 : 2)}%`;
 }
 
+// Share of the largest value in a list, used for the bars drawn behind each row.
+function share(value: number, values: number[]) {
+  return `${(value / Math.max(...values, 1)) * 100}%`;
+}
+
 function formatDay(value: string) {
   const date = new Date(`${value}T12:00:00+08:00`);
   if (selectedRange.value === 1) return "Today";
@@ -187,7 +192,7 @@ onBeforeUnmount(() => clearInterval(refreshTimer));
     </div>
 
     <div class="traffic-grid" :aria-busy="status === 'pending'">
-      <article v-for="system in systems" :key="system.id" class="traffic-card">
+      <article v-for="(system, index) in systems" :key="system.id" class="traffic-card mgmt-card mgmt-enter" :style="{ '--i': index }" data-spotlight>
         <header>
           <h3>{{ system.name }}</h3>
           <div class="card-actions">
@@ -235,6 +240,9 @@ onBeforeUnmount(() => clearInterval(refreshTimer));
               <dd>{{ system.visitorBreakdown.returningRate.toFixed(1) }}%</dd>
             </div>
           </dl>
+          <div class="mix-bar" aria-hidden="true">
+            <i class="mgmt-bar mgmt-bar--x" :style="{ width: `${system.visitorBreakdown.returningRate}%` }" />
+          </div>
         </div>
 
         <div
@@ -243,10 +251,10 @@ onBeforeUnmount(() => clearInterval(refreshTimer));
           :style="{ '--chart-days': system.daily.length }"
           :aria-label="`Daily page views for ${activeRange.label.toLowerCase()}`"
         >
-          <div v-for="day in system.daily" :key="day.date" class="bar-column">
+          <div v-for="(day, dayIndex) in system.daily" :key="day.date" class="bar-column">
             <span class="bar-value">{{ day.pageViews }}</span>
             <div class="bar-track">
-              <i :style="{ height: barHeight(system, day.pageViews) }" />
+              <i class="mgmt-bar" :style="{ height: barHeight(system, day.pageViews), '--i': dayIndex }" />
             </div>
             <span class="bar-day">{{ formatDay(day.date) }}</span>
           </div>
@@ -264,11 +272,11 @@ onBeforeUnmount(() => clearInterval(refreshTimer));
       </div>
 
       <div class="detail-grid">
-        <article class="detail-card">
+        <article class="detail-card mgmt-card" data-spotlight>
           <h4>Section views</h4>
-          <p class="detail-caption">Seen at least 30% in the viewport</p>
+          <p class="detail-caption">Seen at least 30%, or filling half the screen</p>
           <ol v-if="landing.sections.length" class="metric-list">
-            <li v-for="item in landing.sections" :key="item.id">
+            <li v-for="item in landing.sections" :key="item.id" :style="{ '--share': share(item.views, landing.sections.map((entry) => entry.views)) }">
               <span>{{ formatLabel(item.id) }}</span>
               <strong>{{ numberFormatter.format(item.views) }}</strong>
             </li>
@@ -276,11 +284,11 @@ onBeforeUnmount(() => clearInterval(refreshTimer));
           <p v-else class="empty-metric">Waiting for section views</p>
         </article>
 
-        <article class="detail-card">
+        <article class="detail-card mgmt-card" data-spotlight>
           <h4>Button and link clicks</h4>
           <p class="detail-caption">Grouped by page area and label</p>
           <ol v-if="landing.buttons.length" class="metric-list">
-            <li v-for="item in landing.buttons" :key="item.id">
+            <li v-for="item in landing.buttons" :key="item.id" :style="{ '--share': share(item.views, landing.buttons.map((entry) => entry.views)) }">
               <span>{{ formatLabel(item.id) }}</span>
               <strong>{{ numberFormatter.format(item.views) }}</strong>
             </li>
@@ -288,11 +296,11 @@ onBeforeUnmount(() => clearInterval(refreshTimer));
           <p v-else class="empty-metric">Waiting for interactions</p>
         </article>
 
-        <article class="detail-card">
+        <article class="detail-card mgmt-card" data-spotlight>
           <h4>Device usage</h4>
           <p class="detail-caption">Landing page views by viewport</p>
           <ol v-if="landing.devices.length" class="metric-list">
-            <li v-for="item in landing.devices" :key="item.id">
+            <li v-for="item in landing.devices" :key="item.id" :style="{ '--share': share(item.pageViews, landing.devices.map((entry) => entry.pageViews)) }">
               <span>{{ formatLabel(item.id) }}</span>
               <strong>{{ numberFormatter.format(item.pageViews) }}</strong>
             </li>
@@ -300,11 +308,11 @@ onBeforeUnmount(() => clearInterval(refreshTimer));
           <p v-else class="empty-metric">Waiting for page views</p>
         </article>
 
-        <article class="detail-card">
+        <article class="detail-card mgmt-card" data-spotlight>
           <h4>Traffic source</h4>
           <p class="detail-caption">UTM source, referrer host or direct</p>
           <ol v-if="landing.sources.length" class="metric-list">
-            <li v-for="item in landing.sources" :key="item.id">
+            <li v-for="item in landing.sources" :key="item.id" :style="{ '--share': share(item.pageViews, landing.sources.map((entry) => entry.pageViews)) }">
               <span>{{ formatLabel(item.id) }}</span>
               <strong>{{ numberFormatter.format(item.pageViews) }}</strong>
             </li>
@@ -324,11 +332,11 @@ onBeforeUnmount(() => clearInterval(refreshTimer));
       </div>
 
       <div class="detail-grid lms-detail-grid">
-        <article class="detail-card">
+        <article class="detail-card mgmt-card" data-spotlight>
           <h4>Most viewed LMS pages</h4>
           <p class="detail-caption">All user-facing routes, grouped by page path</p>
           <ol v-if="lms.pages.length" class="metric-list">
-            <li v-for="item in lms.pages" :key="item.id">
+            <li v-for="item in lms.pages" :key="item.id" :style="{ '--share': share(item.pageViews, lms.pages.map((entry) => entry.pageViews)) }">
               <span>{{ item.id }}</span>
               <strong>{{ numberFormatter.format(item.pageViews) }}</strong>
             </li>
@@ -353,7 +361,7 @@ onBeforeUnmount(() => clearInterval(refreshTimer));
 .traffic-eyebrow {
   margin-bottom: 6px;
   color: var(--nex4-green-bright);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 800;
   letter-spacing: 1.4px;
   text-transform: uppercase;
@@ -384,8 +392,8 @@ onBeforeUnmount(() => clearInterval(refreshTimer));
 }
 .range-switcher button span,
 .range-switcher button small { display: block; }
-.range-switcher button span { font-size: 11px; font-weight: 750; }
-.range-switcher button small { margin-top: 1px; font-size: 9px; opacity: 0.65; }
+.range-switcher button span { font-size: 12px; font-weight: 750; }
+.range-switcher button small { margin-top: 1px; font-size: 11px; opacity: 0.65; }
 .range-switcher button.active {
   background: rgba(221, 168, 18, 0.14);
   color: var(--nex4-text);
@@ -398,16 +406,16 @@ onBeforeUnmount(() => clearInterval(refreshTimer));
   gap: 18px;
   margin: -8px 0 22px;
   color: var(--nex4-text-muted);
-  font-size: 10px;
+  font-size: 12px;
 }
 .report-context > div { display: flex; align-items: center; gap: 9px; }
-.report-context strong { color: var(--nex4-text-secondary); font-size: 11px; }
+.report-context strong { color: var(--nex4-text-secondary); font-size: 12px; }
 .privacy-note,
 .detail-heading > span,
 .detail-caption,
 .empty-metric {
   color: var(--nex4-text-muted);
-  font-size: 11px;
+  font-size: 12px;
 }
 .traffic-grid {
   display: grid;
@@ -417,9 +425,6 @@ onBeforeUnmount(() => clearInterval(refreshTimer));
 .traffic-card,
 .detail-card {
   padding: 24px;
-  border: 1px solid rgba(255, 255, 255, 0.09);
-  border-radius: 18px;
-  background: rgba(9, 14, 24, 0.78);
 }
 .traffic-card header {
   display: flex;
@@ -437,7 +442,7 @@ onBeforeUnmount(() => clearInterval(refreshTimer));
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 700;
 }
 .traffic-card header i {
@@ -455,8 +460,8 @@ onBeforeUnmount(() => clearInterval(refreshTimer));
   gap: 10px;
   margin: 24px 0 28px;
 }
-.traffic-totals dt { color: var(--nex4-text-muted); font-size: 10px; line-height: 1.35; }
-.traffic-totals dt small { display: block; margin-top: 2px; font-size: 8px; opacity: 0.65; }
+.traffic-totals dt { color: var(--nex4-text-muted); font-size: 12px; line-height: 1.35; }
+.traffic-totals dt small { display: block; margin-top: 2px; font-size: 11px; opacity: 0.65; }
 .traffic-totals dd {
   margin-top: 5px;
   font-family: "Manrope", sans-serif;
@@ -466,7 +471,7 @@ onBeforeUnmount(() => clearInterval(refreshTimer));
 .card-actions { display: flex; align-items: flex-end; flex-direction: column; gap: 7px; }
 .details-link {
   color: var(--nex4-green-bright);
-  font-size: 9px;
+  font-size: 11px;
   font-weight: 750;
   letter-spacing: .3px;
 }
@@ -487,11 +492,11 @@ onBeforeUnmount(() => clearInterval(refreshTimer));
 }
 .visitor-breakdown-heading strong {
   color: var(--nex4-text-secondary);
-  font-size: 11px;
+  font-size: 12px;
 }
 .visitor-breakdown-heading span {
   color: var(--nex4-text-muted);
-  font-size: 8px;
+  font-size: 11px;
 }
 .visitor-breakdown dl {
   display: grid;
@@ -500,13 +505,13 @@ onBeforeUnmount(() => clearInterval(refreshTimer));
 }
 .visitor-breakdown dt {
   color: var(--nex4-text-muted);
-  font-size: 9px;
+  font-size: 11px;
   line-height: 1.35;
 }
 .visitor-breakdown dt small {
   display: block;
   margin-top: 2px;
-  font-size: 7px;
+  font-size: 10px;
   opacity: 0.65;
 }
 .visitor-breakdown dd {
@@ -536,7 +541,7 @@ onBeforeUnmount(() => clearInterval(refreshTimer));
 .bar-day {
   overflow: hidden;
   color: var(--nex4-text-muted);
-  font-size: 9px;
+  font-size: 11px;
   text-overflow: ellipsis;
 }
 .bar-track {
@@ -620,4 +625,31 @@ onBeforeUnmount(() => clearInterval(refreshTimer));
   .visitor-breakdown dl > div { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
   .visitor-breakdown dd { margin-top: 0; }
 }
+
+/* --- refreshed console styling --- */
+.traffic-heading h2 { font-size: 34px; }
+.range-switcher button { cursor: pointer; }
+.range-switcher button:hover:not(.active) { color: var(--nex4-text); background: rgba(255, 255, 255, 0.04); }
+.connected i { position: relative; }
+.connected i::after { content: ""; position: absolute; inset: 0; border-radius: 50%; background: #34d399; animation: mgmt-ping 2s ease-out infinite; }
+.traffic-card h3 { font-size: 18px; }
+.traffic-totals dd { font-size: 26px; font-variant-numeric: tabular-nums; }
+.visitor-breakdown dd { font-size: 18px; }
+.details-link { transition: color 0.2s ease, letter-spacing 0.3s ease; }
+.details-link:hover { letter-spacing: 0.8px; }
+/* New versus returning visitors as one split bar. */
+.mix-bar { height: 5px; margin-top: 14px; overflow: hidden; border-radius: 999px; background: rgba(255, 255, 255, 0.08); }
+.mix-bar i { display: block; height: 100%; border-radius: inherit; background: var(--nex4-gradient); }
+.traffic-chart { height: 140px; }
+.bar-column .bar-value { transition: color 0.2s ease; }
+.bar-column:hover .bar-value { color: var(--nex4-text); }
+.bar-column:hover .bar-track i { opacity: 1; box-shadow: 0 0 14px rgba(221, 168, 18, 0.6); }
+/* Each row carries a faint bar showing its share of the top value. */
+.metric-list li { position: relative; padding: 8px 10px; border-bottom: 0; border-radius: 8px; isolation: isolate; }
+.metric-list li:last-child { padding-bottom: 8px; }
+.metric-list li::before { content: ""; position: absolute; z-index: -1; inset: 0 auto 0 0; width: var(--share, 0%); min-width: 3px; border-radius: inherit; background: linear-gradient(90deg, rgba(221, 168, 18, 0.2), rgba(221, 168, 18, 0.05)); transform-origin: left; animation: mgmt-bar-grow-x 0.9s var(--motion-ease) backwards; }
+.metric-list { gap: 4px; }
+.metric-list span { font-size: 13px; text-transform: capitalize; }
+.lms-detail-grid .metric-list span { text-transform: none; }
+.metric-list strong { font-size: 14px; font-variant-numeric: tabular-nums; }
 </style>

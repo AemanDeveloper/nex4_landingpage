@@ -139,6 +139,8 @@ function displayTarget(target: string | null, path: string) {
   return (target ?? path).replaceAll(":", " · ").replaceAll("-", " ");
 }
 
+usePointerSpotlight();
+
 function onVisibilityChange() {
   isTabVisible.value = !document.hidden;
   if (isTabVisible.value) void refresh();
@@ -165,13 +167,14 @@ useSeoMeta({
 
 <template>
   <div
-    class="analytics-page"
-    :style="{ '--accent': theme.accent, '--accent-rgb': theme.soft }"
+    class="analytics-page mgmt-page"
+    :style="{ '--accent': theme.accent, '--accent-rgb': theme.soft, '--mgmt-accent-rgb': theme.soft }"
   >
-    <div class="page-grid" aria-hidden="true" />
-    <header class="detail-header">
-      <div class="container header-inner">
-        <NuxtLink to="/management" class="back-link">← Management</NuxtLink>
+    <div class="mgmt-grid" aria-hidden="true" />
+    <div class="mgmt-glow" aria-hidden="true" />
+    <header class="mgmt-topbar">
+      <div class="container mgmt-topbar-inner">
+        <NuxtLink to="/management" class="mgmt-pill-button back-link"><span aria-hidden="true">←</span> Management</NuxtLink>
         <div class="live-status">
           <i :class="{ active: isTabVisible }" />
           {{ isTabVisible ? "Live · refreshes every 30s" : "Paused while hidden" }}
@@ -182,11 +185,11 @@ useSeoMeta({
     <main class="container detail-main">
       <section class="hero">
         <div>
-          <p class="eyebrow"><span /> {{ theme.label }} intelligence</p>
-          <h1>{{ data?.system.name ?? theme.label }}</h1>
-          <p>Understand traffic, page openings, clicks and anonymous user journeys.</p>
+          <p class="eyebrow mgmt-enter"><span /> {{ theme.label }} intelligence</p>
+          <h1 class="mgmt-enter" style="--i: 1">{{ data?.system.name ?? theme.label }}</h1>
+          <p class="mgmt-enter" style="--i: 2">Understand traffic, page openings, clicks and anonymous user journeys.</p>
         </div>
-        <div class="hero-actions">
+        <div class="hero-actions mgmt-enter" style="--i: 3">
           <div class="range-switcher" role="group" aria-label="Reporting period">
             <button
               v-for="option in ([1, 7, 30] as RangeDays[])"
@@ -215,32 +218,32 @@ useSeoMeta({
 
       <template v-if="summary">
         <section class="kpi-grid" aria-label="Traffic summary">
-          <article><span>Page views</span><strong>{{ numberFormatter.format(summary.pageViews) }}</strong></article>
-          <article><span>Unique visitors</span><strong>{{ numberFormatter.format(summary.uniqueVisitors) }}</strong></article>
-          <article><span>Sessions</span><strong>{{ numberFormatter.format(summary.sessions) }}</strong></article>
-          <article><span>New visitors</span><strong>{{ numberFormatter.format(summary.newVisitors) }}</strong></article>
-          <article><span>Returning visitors</span><strong>{{ numberFormatter.format(summary.returningVisitors) }}</strong></article>
-          <article><span>Returning rate</span><strong>{{ summary.returningRate.toFixed(1) }}%</strong></article>
-          <article><span>Pages / session</span><strong>{{ summary.pagesPerSession.toFixed(1) }}</strong></article>
-          <article><span>Avg. session</span><strong>{{ duration(summary.averageSessionSeconds) }}</strong></article>
+          <article class="mgmt-card mgmt-enter" style="--i: 0" data-spotlight><span>Page views</span><strong>{{ numberFormatter.format(summary.pageViews) }}</strong></article>
+          <article class="mgmt-card mgmt-enter" style="--i: 1" data-spotlight><span>Unique visitors</span><strong>{{ numberFormatter.format(summary.uniqueVisitors) }}</strong></article>
+          <article class="mgmt-card mgmt-enter" style="--i: 2" data-spotlight><span>Sessions</span><strong>{{ numberFormatter.format(summary.sessions) }}</strong></article>
+          <article class="mgmt-card mgmt-enter" style="--i: 3" data-spotlight><span>New visitors</span><strong>{{ numberFormatter.format(summary.newVisitors) }}</strong></article>
+          <article class="mgmt-card mgmt-enter" style="--i: 4" data-spotlight><span>Returning visitors</span><strong>{{ numberFormatter.format(summary.returningVisitors) }}</strong></article>
+          <article class="mgmt-card mgmt-enter" style="--i: 5" data-spotlight><span>Returning rate</span><strong>{{ summary.returningRate.toFixed(1) }}%</strong></article>
+          <article class="mgmt-card mgmt-enter" style="--i: 6" data-spotlight><span>Pages / session</span><strong>{{ summary.pagesPerSession.toFixed(1) }}</strong></article>
+          <article class="mgmt-card mgmt-enter" style="--i: 7" data-spotlight><span>Avg. session</span><strong>{{ duration(summary.averageSessionSeconds) }}</strong></article>
         </section>
 
-        <section class="panel trend-panel">
+        <section class="panel trend-panel mgmt-enter" style="--i: 4">
           <div class="panel-heading">
             <div><p class="panel-kicker">Traffic trend</p><h2>Views and actions</h2></div>
             <span>Selected {{ rangeDays === 1 ? "day" : `${rangeDays} days` }}</span>
           </div>
           <div class="trend-chart" :style="{ '--days': data?.daily.length ?? 1 }">
-            <div v-for="day in data?.daily" :key="day.date" class="trend-column">
+            <div v-for="(day, dayIndex) in data?.daily" :key="day.date" class="trend-column">
               <span>{{ day.pageViews }}</span>
-              <div class="trend-track"><i :style="{ height: barHeight(day.pageViews) }" /></div>
+              <div class="trend-track"><i class="mgmt-bar" :style="{ height: barHeight(day.pageViews), '--i': dayIndex }" /></div>
               <small>{{ dayFormatter.format(new Date(`${day.date}T12:00:00+08:00`)) }}</small>
             </div>
           </div>
         </section>
 
         <section class="two-column">
-          <article class="panel table-panel">
+          <article class="panel table-panel" data-spotlight>
             <div class="panel-heading"><div><p class="panel-kicker">Content</p><h2>Most opened pages</h2></div></div>
             <div v-if="data?.pages.length" class="data-table">
               <div class="table-row table-head"><span>Page</span><span>Views</span><span>Entry</span><span>Exit</span></div>
@@ -252,7 +255,7 @@ useSeoMeta({
             <p v-else class="empty">No page openings in this period.</p>
           </article>
 
-          <article class="panel table-panel">
+          <article class="panel table-panel" data-spotlight>
             <div class="panel-heading"><div><p class="panel-kicker">Engagement</p><h2>Most clicked actions</h2></div></div>
             <div v-if="data?.actions.length" class="action-list">
               <div v-for="action in data.actions" :key="`${action.path}:${action.target}:${action.destination}`">
@@ -265,26 +268,26 @@ useSeoMeta({
         </section>
 
         <section class="two-column">
-          <article class="panel">
+          <article class="panel" data-spotlight>
             <div class="panel-heading"><div><p class="panel-kicker">Audience</p><h2>Devices</h2></div></div>
             <div class="breakdown-list">
               <div v-for="item in data?.devices" :key="item.id">
-                <span>{{ item.id }}</span><i><b :style="{ width: `${(item.events / maximumDimension(data?.devices ?? [])) * 100}%` }" /></i><strong>{{ item.events }}</strong>
+                <span>{{ item.id }}</span><i><b class="mgmt-bar mgmt-bar--x" :style="{ width: `${(item.events / maximumDimension(data?.devices ?? [])) * 100}%` }" /></i><strong>{{ item.events }}</strong>
               </div>
             </div>
           </article>
-          <article class="panel">
+          <article class="panel" data-spotlight>
             <div class="panel-heading"><div><p class="panel-kicker">Acquisition</p><h2>Traffic sources</h2></div></div>
             <div class="breakdown-list">
               <div v-for="item in data?.sources" :key="item.id">
-                <span>{{ item.id }}</span><i><b :style="{ width: `${(item.events / maximumDimension(data?.sources ?? [])) * 100}%` }" /></i><strong>{{ item.events }}</strong>
+                <span>{{ item.id }}</span><i><b class="mgmt-bar mgmt-bar--x" :style="{ width: `${(item.events / maximumDimension(data?.sources ?? [])) * 100}%` }" /></i><strong>{{ item.events }}</strong>
               </div>
             </div>
           </article>
         </section>
 
         <section class="two-column activity-grid">
-          <article class="panel">
+          <article class="panel" data-spotlight>
             <div class="panel-heading"><div><p class="panel-kicker">Near-live</p><h2>Recent activity</h2></div><span>Latest 100</span></div>
             <div v-if="data?.recentEvents.length" class="event-list">
               <div v-for="item in data.recentEvents" :key="`${item.occurredAt}:${item.session}:${item.target}`">
@@ -296,7 +299,7 @@ useSeoMeta({
             <p v-else class="empty">No recent activity in this period.</p>
           </article>
 
-          <article class="panel">
+          <article class="panel" data-spotlight>
             <div class="panel-heading"><div><p class="panel-kicker">Behaviour</p><h2>Anonymous journeys</h2></div><span>Latest 20 sessions</span></div>
             <div v-if="data?.journeys.length" class="journey-list">
               <details v-for="journey in data.journeys" :key="journey.id">
@@ -314,7 +317,9 @@ useSeoMeta({
         </section>
       </template>
 
-      <div v-else-if="status === 'pending'" class="loading-state">Loading project intelligence…</div>
+      <div v-else-if="status === 'pending'" class="loading-state" aria-label="Loading project intelligence">
+        <div v-for="placeholder in 8" :key="placeholder" class="mgmt-skeleton" />
+      </div>
     </main>
   </div>
 </template>
@@ -325,52 +330,52 @@ useSeoMeta({
 .detail-header { position: relative; z-index: 2; border-bottom: 1px solid rgba(255,255,255,.08); background: rgba(3,5,10,.75); backdrop-filter: blur(18px); }
 .header-inner { min-height: 70px; display: flex; align-items: center; justify-content: space-between; }
 .back-link { color: #cbd5e1; font-size: 13px; font-weight: 750; }
-.live-status { display: flex; align-items: center; gap: 8px; color: #94a3b8; font-size: 11px; }
+.live-status { display: flex; align-items: center; gap: 8px; color: #94a3b8; font-size: 12px; }
 .live-status i { width: 7px; height: 7px; border-radius: 50%; background: #64748b; }
 .live-status i.active { background: #34d399; box-shadow: 0 0 12px #34d399; }
 .detail-main { position: relative; z-index: 1; padding-top: 58px; padding-bottom: 80px; }
 .hero { display: flex; align-items: flex-end; justify-content: space-between; gap: 28px; }
-.eyebrow,.panel-kicker { color: var(--accent); font-size: 10px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; }
+.eyebrow,.panel-kicker { color: var(--accent); font-size: 12px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; }
 .eyebrow { display: flex; align-items: center; gap: 9px; margin-bottom: 14px; }
 .eyebrow span { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 14px rgba(var(--accent-rgb),.8); }
 h1 { font-family: "Manrope",sans-serif; font-size: clamp(42px,6vw,72px); font-weight: 600; line-height: 1; letter-spacing: -3px; }
 .hero > div > p:last-child { max-width: 620px; margin-top: 17px; color: #94a3b8; }
 .hero-actions { display: flex; align-items: center; gap: 10px; }
 .range-switcher { display: flex; padding: 3px; border: 1px solid rgba(255,255,255,.1); border-radius: 12px; background: rgba(9,14,24,.8); }
-.range-switcher button,.refresh-button { min-height: 39px; padding: 0 13px; border: 0; border-radius: 9px; background: transparent; color: #94a3b8; font-size: 11px; font-weight: 750; }
+.range-switcher button,.refresh-button { min-height: 39px; padding: 0 13px; border: 0; border-radius: 9px; background: transparent; color: #94a3b8; font-size: 12px; font-weight: 750; }
 .range-switcher button.active { color: #fff; background: rgba(var(--accent-rgb),.16); box-shadow: inset 0 0 0 1px rgba(var(--accent-rgb),.25); }
 .refresh-button { border: 1px solid rgba(255,255,255,.1); color: #e2e8f0; }
 .refresh-button:disabled { opacity: .55; }
-.freshness { display: flex; justify-content: space-between; margin: 18px 0 28px; color: #64748b; font-size: 10px; }
+.freshness { display: flex; justify-content: space-between; margin: 18px 0 28px; color: #64748b; font-size: 12px; }
 .kpi-grid { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 12px; }
 .kpi-grid article,.panel { border: 1px solid rgba(255,255,255,.085); border-radius: 18px; background: linear-gradient(145deg,rgba(15,23,42,.8),rgba(5,8,15,.9)); box-shadow: inset 0 1px rgba(255,255,255,.035),0 18px 60px rgba(0,0,0,.18); }
 .kpi-grid article { min-height: 118px; display: flex; flex-direction: column; justify-content: center; padding: 20px; }
-.kpi-grid span { color: #64748b; font-size: 10px; font-weight: 700; letter-spacing: .7px; text-transform: uppercase; }
+.kpi-grid span { color: #64748b; font-size: 12px; font-weight: 700; letter-spacing: .7px; text-transform: uppercase; }
 .kpi-grid strong { margin-top: 7px; color: var(--accent); font-family: "Manrope",sans-serif; font-size: 25px; }
 .panel { padding: 24px; }
 .trend-panel { margin-top: 18px; }
 .panel-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; margin-bottom: 22px; }
 .panel-heading h2 { margin-top: 4px; font-family: "Manrope",sans-serif; font-size: 19px; }
-.panel-heading > span { color: #64748b; font-size: 10px; }
+.panel-heading > span { color: #64748b; font-size: 12px; }
 .trend-chart { height: 190px; display: grid; grid-template-columns: repeat(var(--days),minmax(28px,1fr)); gap: 9px; overflow-x: auto; }
 .trend-column { min-width: 28px; display: grid; grid-template-rows: 16px 1fr 18px; gap: 5px; text-align: center; }
-.trend-column > span,.trend-column small { color: #64748b; font-size: 9px; }
+.trend-column > span,.trend-column small { color: #64748b; font-size: 11px; }
 .trend-track { position: relative; overflow: hidden; border-radius: 6px; background: rgba(255,255,255,.035); }
 .trend-track i { position: absolute; right: 0; bottom: 0; left: 0; border-radius: 6px; background: linear-gradient(to top,rgba(var(--accent-rgb),.52),var(--accent)); }
 .two-column { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 18px; margin-top: 18px; }
 .data-table { display: grid; }
-.table-row { min-width: 0; display: grid; grid-template-columns: minmax(0,1fr) repeat(3,50px); gap: 10px; align-items: center; padding: 11px 0; border-bottom: 1px solid rgba(255,255,255,.055); color: #94a3b8; font-size: 11px; text-align: right; }
+.table-row { min-width: 0; display: grid; grid-template-columns: minmax(0,1fr) repeat(3,50px); gap: 10px; align-items: center; padding: 11px 0; border-bottom: 1px solid rgba(255,255,255,.055); color: #94a3b8; font-size: 12px; text-align: right; }
 .table-row:last-child { border-bottom: 0; }
 .table-row strong,.table-row > span:first-child { overflow: hidden; color: #e2e8f0; text-align: left; text-overflow: ellipsis; white-space: nowrap; }
-.table-head { padding-top: 0; color: #64748b; font-size: 8px; font-weight: 700; letter-spacing: .7px; text-transform: uppercase; }
+.table-head { padding-top: 0; color: #64748b; font-size: 11px; font-weight: 700; letter-spacing: .7px; text-transform: uppercase; }
 .action-list,.event-list,.journey-list,.breakdown-list { display: grid; gap: 9px; }
 .action-list > div { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,.055); }
 .action-list > div:last-child { border-bottom: 0; }
 .action-list strong,.action-list small { display: block; }
-.action-list strong { color: #e2e8f0; font-size: 11px; text-transform: capitalize; }
-.action-list small { max-width: 360px; overflow: hidden; margin-top: 3px; color: #64748b; font-size: 9px; text-overflow: ellipsis; white-space: nowrap; }
+.action-list strong { color: #e2e8f0; font-size: 12px; text-transform: capitalize; }
+.action-list small { max-width: 360px; overflow: hidden; margin-top: 3px; color: #64748b; font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
 .action-list > div > span { color: var(--accent); font-weight: 800; }
-.breakdown-list > div { display: grid; grid-template-columns: 100px 1fr 44px; align-items: center; gap: 12px; color: #94a3b8; font-size: 11px; text-transform: capitalize; }
+.breakdown-list > div { display: grid; grid-template-columns: 100px 1fr 44px; align-items: center; gap: 12px; color: #94a3b8; font-size: 12px; text-transform: capitalize; }
 .breakdown-list i { height: 6px; overflow: hidden; border-radius: 99px; background: rgba(255,255,255,.045); }
 .breakdown-list b { height: 100%; display: block; border-radius: inherit; background: var(--accent); }
 .breakdown-list strong { color: #e2e8f0; text-align: right; }
@@ -380,18 +385,54 @@ h1 { font-family: "Manrope",sans-serif; font-size: clamp(42px,6vw,72px); font-we
 .event-list i { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
 .event-list i.page_view { background: #38bdf8; }.event-list i.section_view { background: #a78bfa; }
 .event-list strong,.event-list small { display: block; }
-.event-list strong { overflow: hidden; color: #cbd5e1; font-size: 10px; text-overflow: ellipsis; white-space: nowrap; text-transform: capitalize; }
-.event-list small,.event-list time { color: #64748b; font-size: 8px; }
+.event-list strong { overflow: hidden; color: #cbd5e1; font-size: 12px; text-overflow: ellipsis; white-space: nowrap; text-transform: capitalize; }
+.event-list small,.event-list time { color: #64748b; font-size: 11px; }
 .journey-list details { border: 1px solid rgba(255,255,255,.07); border-radius: 12px; background: rgba(255,255,255,.02); }
 .journey-list summary { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 13px; cursor: pointer; list-style: none; }
 .journey-list summary strong,.journey-list summary small { display: block; }
-.journey-list summary strong { color: #e2e8f0; font-size: 10px; }.journey-list summary small { margin-top: 3px; color: #64748b; font-size: 8px; }
-.journey-list summary b { color: var(--accent); font-size: 9px; }
+.journey-list summary strong { color: #e2e8f0; font-size: 12px; }.journey-list summary small { margin-top: 3px; color: #64748b; font-size: 11px; }
+.journey-list summary b { color: var(--accent); font-size: 11px; }
 .journey-list ol { display: grid; gap: 12px; margin: 0 13px 13px 30px; padding-top: 13px; border-top: 1px solid rgba(255,255,255,.06); }
-.journey-list li { color: #94a3b8; font-size: 9px; }.journey-list li time { display: block; color: #64748b; font-size: 8px; }.journey-list li strong { color: #e2e8f0; text-transform: capitalize; }.journey-list li small { display: block; color: #64748b; }
-.empty,.loading-state { padding: 34px 0; color: #64748b; font-size: 11px; text-align: center; }
+.journey-list li { color: #94a3b8; font-size: 11px; }.journey-list li time { display: block; color: #64748b; font-size: 11px; }.journey-list li strong { color: #e2e8f0; text-transform: capitalize; }.journey-list li small { display: block; color: #64748b; }
+.empty,.loading-state { padding: 34px 0; color: #64748b; font-size: 12px; text-align: center; }
 .loading-state { margin-top: 30px; border: 1px solid rgba(255,255,255,.08); border-radius: 18px; }
 .error-banner { margin-bottom: 20px; padding: 14px 17px; border: 1px solid rgba(248,113,113,.25); border-radius: 12px; color: #fca5a5; background: rgba(127,29,29,.15); font-size: 12px; }
 @media (max-width: 1000px) { .kpi-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }.two-column { grid-template-columns: 1fr; } }
 @media (max-width: 680px) { .detail-main { padding-top: 40px; }.hero { align-items: flex-start; flex-direction: column; }.hero-actions,.range-switcher { width: 100%; }.range-switcher button { flex: 1; }.freshness { align-items: flex-start; flex-direction: column; gap: 4px; }.kpi-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }.kpi-grid article { min-height: 102px; padding: 16px; }.kpi-grid strong { font-size: 20px; }.panel { padding: 18px; }.table-row { grid-template-columns: minmax(0,1fr) repeat(3,40px); }.event-list > div { grid-template-columns: 8px minmax(0,1fr); }.event-list time { grid-column: 2; }.header-inner { min-height: 62px; } }
+
+/* --- refreshed console styling --- */
+.analytics-page { background: #03050a; }
+.back-link { color: #e2e8f0; }
+.back-link span { transition: transform var(--motion-fast) var(--motion-ease); }
+.back-link:hover span { transform: translateX(-4px); }
+.live-status { padding-right: 8px; font-size: 12px; }
+.live-status i { position: relative; }
+.live-status i.active::after { content: ""; position: absolute; inset: 0; border-radius: 50%; background: #34d399; animation: mgmt-ping 2s ease-out infinite; }
+.eyebrow span { animation: status-pulse 2.2s ease-in-out infinite; }
+.range-switcher button,.refresh-button { cursor: pointer; transition: color .2s ease,background .2s ease,border-color .2s ease; }
+.range-switcher button:hover:not(.active) { color: #fff; background: rgba(255,255,255,.05); }
+.refresh-button:hover:not(:disabled) { border-color: rgba(var(--accent-rgb),.5); background: rgba(var(--accent-rgb),.1); }
+.kpi-grid article { overflow: hidden; }
+.kpi-grid article::after { content: ""; position: absolute; inset: 0 20% auto; height: 1px; background: linear-gradient(90deg,transparent,rgba(var(--accent-rgb),.8),transparent); opacity: 0; transition: opacity .3s ease; }
+.kpi-grid article:hover::after { opacity: 1; }
+.kpi-grid strong { font-size: 30px; font-variant-numeric: tabular-nums; }
+.panel { position: relative; transition: border-color .3s ease; }
+.panel > * { position: relative; z-index: 1; }
+.panel:hover { border-color: rgba(var(--accent-rgb),.22); }
+.panel[data-spotlight]::before,.kpi-grid article[data-spotlight]::before { background: radial-gradient(420px circle at var(--mx,50%) var(--my,50%),rgba(var(--accent-rgb),.12),transparent 62%); }
+.trend-column:hover > span { color: #fff; }
+.trend-column:hover .trend-track i { box-shadow: 0 0 16px rgba(var(--accent-rgb),.7); }
+.table-row:not(.table-head),.action-list > div,.event-list > div { transition: background .2s ease; }
+.table-row:not(.table-head):hover,.event-list > div:hover { background: rgba(255,255,255,.025); }
+.breakdown-list i { height: 8px; }
+.event-list > div:first-child i { box-shadow: 0 0 0 4px rgba(var(--accent-rgb),.16); }
+.journey-list details { transition: border-color .25s ease,background .25s ease; }
+.journey-list details:hover,.journey-list details[open] { border-color: rgba(var(--accent-rgb),.3); background: rgba(var(--accent-rgb),.04); }
+.journey-list summary::after { content: "+"; color: var(--accent); font-size: 16px; line-height: 1; transition: transform .3s var(--motion-ease); }
+.journey-list details[open] summary::after { transform: rotate(45deg); }
+.journey-list summary > span { flex: 1; min-width: 0; }
+.loading-state { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 12px; padding: 0; border: 0; }
+.loading-state .mgmt-skeleton { height: 118px; }
+@media (max-width: 1000px) { .loading-state { grid-template-columns: repeat(2,minmax(0,1fr)); } }
+@media (max-width: 680px) { .kpi-grid strong { font-size: 22px; } }
 </style>
